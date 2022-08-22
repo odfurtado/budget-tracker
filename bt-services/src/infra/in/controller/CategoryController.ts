@@ -18,24 +18,31 @@ export default class CategoryController {
 		);
 		return {
 			output: output.categories,
-			status: 201,
+			status: 200,
 		};
 	};
 
-	save = async (userid: string, _: any, body: any) => {
+	save = async (userid: string, _: any, body: BodySave) => {
 		let input = {
 			user: {
 				id: userid,
 			},
-			name: body.name,
+			...body,
 		};
-		let output = await new CreateCategory(this.repositoryFactory).execute(
-			input
-		);
-		return {
-			output: output.id,
-			status: 201,
-		};
+		try {
+			let output = await new CreateCategory(this.repositoryFactory).execute(
+				input
+			);
+			return {
+				output: output.id,
+				status: 201,
+			};
+		} catch (e: any) {
+			return {
+				output: e.message,
+				status: 400,
+			};
+		}
 	};
 
 	delete = async (userid: string, params: any) => {
@@ -69,3 +76,7 @@ export default class CategoryController {
 		http.on('delete', '/categories/{id}', this.delete);
 	}
 }
+
+type BodySave = {
+	name: string;
+};

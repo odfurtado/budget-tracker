@@ -8,7 +8,8 @@ export default class PaymentTypeController {
 	list = async () => {
 		let output = await new GetPaymentTypes(this.repositoryFactory).execute();
 		return {
-			output,
+			output: output.paymentTypes,
+			status: 200,
 		};
 	};
 

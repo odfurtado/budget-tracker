@@ -20,6 +20,9 @@ export default class CategoryRepositoryMemory implements CategoryRepository {
 	}
 
 	async save(category: Category): Promise<void> {
+		if (!category || !category.name) {
+			throw new Error('category.name required');
+		}
 		this.categories.push(category);
 	}
 
