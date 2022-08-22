@@ -12,7 +12,6 @@ export default class DeleteCategory {
 		if (!category) {
 			throw new Error('Category not found');
 		}
-
 		if (category.canDelete(input.user.id)) {
 			this.categoryRepository.delete(category.id);
 		} else {

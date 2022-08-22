@@ -1,6 +1,7 @@
-import Http from './Http';
-import express, { Request, Response } from 'express';
+import Http, { CallbackFunction } from './Http';
+import express, { Response } from 'express';
 import bodyParser from 'body-parser';
+import Security from '../security/Secutity';
 
 export default class ExpressAdapter implements Http {
 	private app: any;
@@ -14,14 +15,35 @@ export default class ExpressAdapter implements Http {
 		return url.replace(/\{/g, ':').replace(/\}/g, '');
 	}
 
-	on(method: string, url: string, callback: Function): void {
-		this.app[method](
-			this.parseUrl(url),
-			async (req: Request, res: Response) => {
-				const output = await callback(req.params, req.body);
-				res.json(output);
+	on(method: string, url: string, callback: CallbackFunction): void {
+		this.app[method](this.parseUrl(url), async (req: any, res: Response) => {
+			try {
+				const result = await callback(req.userid, req.params, req.body);
+				if (result?.status) {
+					res.status(result.status);
+				}
+				if (result?.output) {
+					res.json(result.output);
+				} else {
+					res.send();
+				}
+			} catch (e: any) {
+				res.status(500).json(e.message);
 			}
-		);
+		});
+	}
+
+	secure(security: Security) {
+		this.app.use(async (req: any, res: any, next: any) => {
+			let token = req.get('Authorization');
+			let userId = await security.extract(token);
+			if (!userId) {
+				res.status(401).send('Unauthorized');
+				return;
+			}
+			req.userid = userId;
+			next();
+		});
 	}
 
 	listen(port: number): void {

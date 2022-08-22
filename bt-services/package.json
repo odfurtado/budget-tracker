@@ -5,6 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"start": "tsc && node dist/src/main",
+		"dev": "nodemon --watch 'src/' --exec 'ts-node src/main.ts' -e ts",
 		"test": "tsc && jest dist/test"
 	},
 	"keywords": [],
@@ -16,6 +17,7 @@
 		"date-fns": "^2.29.1",
 		"dotenv": "^16.0.1",
 		"express": "^4.18.1",
+		"googleapis": "^107.0.0",
 		"mongodb": "^4.8.1",
 		"mongoose": "^6.5.0",
 		"sinon": "^14.0.0",

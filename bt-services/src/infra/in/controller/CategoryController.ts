@@ -1,3 +1,5 @@
+import CreateCategory from '../../../application/CreateCategory';
+import DeleteCategory from '../../../application/DeleteCategory';
 import GetCategories from '../../../application/GetCategories';
 import RepositoryFactory from '../../../domain/repository/RepositoryFactory';
 import Http from '../http/Http';
@@ -5,21 +7,60 @@ import Http from '../http/Http';
 export default class CategoryController {
 	constructor(private repositoryFactory: RepositoryFactory) {}
 
-	list = async (params: any) => {
+	list = async (userid: string) => {
 		let input = {
 			user: {
-				id: 'my-user-id',
+				id: userid,
 			},
 		};
-		return await new GetCategories(this.repositoryFactory).execute(input);
+		let output = await new GetCategories(this.repositoryFactory).execute(
+			input
+		);
+		return {
+			output: output.categories,
+			status: 201,
+		};
 	};
 
-	save = async () => {
-		console.log('CategoryController - save');
+	save = async (userid: string, _: any, body: any) => {
+		let input = {
+			user: {
+				id: userid,
+			},
+			name: body.name,
+		};
+		let output = await new CreateCategory(this.repositoryFactory).execute(
+			input
+		);
+		return {
+			output: output.id,
+			status: 201,
+		};
 	};
 
-	delete = async () => {
-		console.log('CategoryController - delete');
+	delete = async (userid: string, params: any) => {
+		let input = {
+			user: {
+				id: userid,
+			},
+			id: params['id'],
+		};
+		let message: string = '';
+		let status: number;
+		try {
+			await new DeleteCategory(this.repositoryFactory).execute(input);
+			status = 200;
+		} catch (e: any) {
+			message = e.message;
+			status = 500;
+			if (message === 'Category not found') {
+				status = 404;
+			}
+		}
+		return {
+			output: message,
+			status,
+		};
 	};
 
 	public bind(http: Http) {
