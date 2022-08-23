@@ -5,7 +5,7 @@ import CategorySchema from './model/CategoryModel';
 
 export default class CategoryRepositoryMongoDB implements CategoryRepository {
 	private readonly CategoryModel;
-	constructor(private connection: mongoose.Connection) {
+	constructor(private readonly connection: mongoose.Connection) {
 		this.CategoryModel = this.connection.model<Category>(
 			'Category',
 			CategorySchema
