@@ -3,6 +3,11 @@ module.exports = {
 	preset: 'ts-jest',
 	testEnvironment: 'node',
 	setupFiles: ['./test/config/setup.ts'],
+	globals: {
+		'ts-jest': {
+			isolatedModules: true,
+		},
+	},
 };
 
 // const merge = require('merge');
