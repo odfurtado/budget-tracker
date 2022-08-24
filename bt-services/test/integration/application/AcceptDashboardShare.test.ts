@@ -13,15 +13,18 @@ describe('UseCase.AcceptDashboardShare', () => {
 		);
 		await dashboardShareRepository.save(dashboardShare);
 		let input = {
-			userId: 'userId-2222',
-			userEmail: 'validuser@mail.com',
-			dashboardSharedId: dashboardShare.id,
+			user: {
+				id: 'userId-2222',
+				name: '',
+				email: 'validuser@mail.com',
+			},
+			dashboardShareId: dashboardShare.id,
 		};
 		await new AcceptDashboardShare(repositoryFactory).execute(input);
 		let dashboardShareSaved = (await dashboardShareRepository.get(
 			dashboardShare.id
 		)) as DashboardShare;
-		expect(dashboardShareSaved.sharedWithUserId).toBe(input.userId);
+		expect(dashboardShareSaved.sharedWithUserId).toBe(input.user.id);
 		expect(dashboardShareSaved.status).toBe('Approved');
 		expect(dashboardShareSaved.approvedAt).not.toBeNull();
 	});
@@ -38,9 +41,12 @@ describe('UseCase.AcceptDashboardShare', () => {
 		);
 		await dashboardShareRepository.save(dashboardShare);
 		let input = {
-			userId: 'userId-2222',
-			userEmail: 'validuser@mail.com',
-			dashboardSharedId: dashboardShare.id,
+			user: {
+				id: 'userId-2222',
+				name: '',
+				email: 'validuser@mail.com',
+			},
+			dashboardShareId: dashboardShare.id,
 		};
 		await expect(
 			new AcceptDashboardShare(repositoryFactory).execute(input)
@@ -61,9 +67,12 @@ describe('UseCase.AcceptDashboardShare', () => {
 		);
 		await dashboardShareRepository.save(dashboardShare);
 		let input = {
-			userId: 'userId-2222',
-			userEmail: 'validuser@mail.com',
-			dashboardSharedId: dashboardShare.id,
+			user: {
+				id: 'userId-2222',
+				name: '',
+				email: 'validuser@mail.com',
+			},
+			dashboardShareId: dashboardShare.id,
 		};
 		await expect(
 			new AcceptDashboardShare(repositoryFactory).execute(input)
@@ -86,9 +95,12 @@ describe('UseCase.AcceptDashboardShare', () => {
 		);
 		await dashboardShareRepository.save(dashboardShare);
 		let input = {
-			userId: 'userId-2222',
-			userEmail: 'validuser@mail.com',
-			dashboardSharedId: dashboardShare.id,
+			user: {
+				id: 'userId-2222',
+				name: '',
+				email: 'validuser@mail.com',
+			},
+			dashboardShareId: dashboardShare.id,
 		};
 		await expect(
 			new AcceptDashboardShare(repositoryFactory).execute(input)
@@ -107,9 +119,12 @@ describe('UseCase.AcceptDashboardShare', () => {
 		);
 		await dashboardShareRepository.save(dashboardShare);
 		let input = {
-			userId: 'userId-2222',
-			userEmail: 'invaliduser@mail.com',
-			dashboardSharedId: dashboardShare.id,
+			user: {
+				id: 'userId-2222',
+				name: '',
+				email: 'invaliduser@mail.com',
+			},
+			dashboardShareId: dashboardShare.id,
 		};
 		await expect(
 			new AcceptDashboardShare(repositoryFactory).execute(input)

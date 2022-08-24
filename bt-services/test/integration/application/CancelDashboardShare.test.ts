@@ -13,8 +13,12 @@ describe('UseCase.CancelDashboardShare', () => {
 		);
 		await dashboardShareRepository.save(dashboardShare);
 		let input = {
-			userEmail: dashboardShare.sharedWithEmail,
-			dashboardSharedId: dashboardShare.id,
+			user: {
+				id: 'userId-1111',
+				name: '',
+				email: dashboardShare.sharedWithEmail,
+			},
+			dashboardShareId: dashboardShare.id,
 		};
 		await new CancelDashboardShare(repositoryFactory).execute(input);
 		let dashboardShareSaved = (await dashboardShareRepository.get(
@@ -37,8 +41,12 @@ describe('UseCase.CancelDashboardShare', () => {
 		);
 		await dashboardShareRepository.save(dashboardShare);
 		let input = {
-			userEmail: dashboardShare.sharedWithEmail,
-			dashboardSharedId: dashboardShare.id,
+			user: {
+				id: 'userId-1111',
+				name: '',
+				email: dashboardShare.sharedWithEmail,
+			},
+			dashboardShareId: dashboardShare.id,
 		};
 		await new CancelDashboardShare(repositoryFactory).execute(input);
 		let dashboardShareSaved = (await dashboardShareRepository.get(
@@ -57,8 +65,12 @@ describe('UseCase.CancelDashboardShare', () => {
 		);
 		await dashboardShareRepository.save(dashboardShare);
 		let input = {
-			userEmail: 'invaliduser@mail.com',
-			dashboardSharedId: dashboardShare.id,
+			user: {
+				id: 'userId-1111',
+				name: '',
+				email: 'invaliduser@mail.com',
+			},
+			dashboardShareId: dashboardShare.id,
 		};
 		await expect(
 			new CancelDashboardShare(repositoryFactory).execute(input)

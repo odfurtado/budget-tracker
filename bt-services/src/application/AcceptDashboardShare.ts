@@ -1,3 +1,4 @@
+import UserData from '../domain/entity/UserData';
 import DashboardShareRepository from '../domain/repository/DashboardShareRepository';
 import RepositoryFactory from '../domain/repository/RepositoryFactory';
 
@@ -10,18 +11,17 @@ export default class AcceptDashboardShare {
 
 	async execute(input: Input): Promise<void> {
 		let dashboardShare = await this.dashboardShareRepository.get(
-			input.dashboardSharedId
+			input.dashboardShareId
 		);
 		if (!dashboardShare) {
 			throw new Error('Dashboard share not found or not authorized');
 		}
-		dashboardShare.acceptBy(input.userId, input.userEmail);
+		dashboardShare.acceptBy(input.user.id, input.user.email);
 		await this.dashboardShareRepository.save(dashboardShare);
 	}
 }
 
 type Input = {
-	userId: string;
-	userEmail: string;
-	dashboardSharedId: string;
+	user: UserData;
+	dashboardShareId: string;
 };

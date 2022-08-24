@@ -7,7 +7,11 @@ describe('UseCase.CreateDashboardShare', () => {
 		let dashboardShareRepository =
 			repositoryFactory.createDashboardShareRepository();
 		let input = {
-			userId: 'userId-1111',
+			user: {
+				id: 'userId-1111',
+				name: '',
+				email: '',
+			},
 			dashboard: 'userId-1111',
 			shareWith: 'anotheruser@mail.com',
 		};
@@ -23,7 +27,11 @@ describe('UseCase.CreateDashboardShare', () => {
 	test('Should not duplicate a dashboard share with same user', async () => {
 		let repositoryFactory = new MemoryRepositoryFactory();
 		let input = {
-			userId: 'userId-1111',
+			user: {
+				id: 'userId-1111',
+				name: '',
+				email: '',
+			},
 			dashboard: 'userId-1111',
 			shareWith: 'anotheruser@mail.com',
 		};
@@ -36,7 +44,11 @@ describe('UseCase.CreateDashboardShare', () => {
 	test('Cannot share a dashboard from other user', async () => {
 		let repositoryFactory = new MemoryRepositoryFactory();
 		let input = {
-			userId: 'userId-1111',
+			user: {
+				id: 'userId-1111',
+				name: '',
+				email: '',
+			},
 			dashboard: 'userId-1122',
 			shareWith: 'anotheruser@mail.com',
 		};

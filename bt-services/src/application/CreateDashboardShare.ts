@@ -1,4 +1,5 @@
 import DashboardShare from '../domain/entity/DashboardShare';
+import UserData from '../domain/entity/UserData';
 import DashboardShareRepository from '../domain/repository/DashboardShareRepository';
 import RepositoryFactory from '../domain/repository/RepositoryFactory';
 
@@ -11,21 +12,22 @@ export default class CreateDashboardShare {
 	}
 
 	async execute(input: Input): Promise<void> {
-		let dashboardAlreadyShared = await this.getDashboardShareAlreadyShared(
-			input.dashboard,
-			input.shareWith
-		);
-		if (input.dashboard !== input.userId) {
+		if (input.dashboard !== input.user.id) {
 			throw new Error('Cannot share this dashboard');
 		}
-		if (dashboardAlreadyShared.length !== 0) {
+		let pendingOrApprovedDashboardShare =
+			await this.getPendingOrApprovedDashboardShare(
+				input.dashboard,
+				input.shareWith
+			);
+		if (pendingOrApprovedDashboardShare.length !== 0) {
 			throw new Error('Dashboard already shared with user');
 		}
 		let dashboardShare = new DashboardShare(input.dashboard, input.shareWith);
 		await this.dashboardShareRepository.save(dashboardShare);
 	}
 
-	private async getDashboardShareAlreadyShared(
+	private async getPendingOrApprovedDashboardShare(
 		dashboard: string,
 		shareWith: string
 	) {
@@ -41,7 +43,7 @@ export default class CreateDashboardShare {
 }
 
 type Input = {
-	userId: string;
+	user: UserData;
 	dashboard: string;
 	shareWith: string;
 };
