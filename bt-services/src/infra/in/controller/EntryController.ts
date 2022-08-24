@@ -10,9 +10,8 @@ export default class EntryController {
 
 	list = async (userData: UserData, params: any) => {
 		let input = {
-			user: {
-				id: userData.id,
-			},
+			user: userData,
+			dashboard: userData.id,
 			month: params['month'],
 			year: params['year'],
 		};

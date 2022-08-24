@@ -104,10 +104,7 @@ export default class Entry {
 		dashboardShare: DashboardShare | null,
 		{ date, type, description, category, paymentType, amount }: UpdateData
 	) {
-		let dashboardFromDifferentUser = this.dashboard !== user.id;
-		let dashboardShareIsActive =
-			dashboardShare && dashboardShare.isActive(this.dashboard, user.id);
-		if (dashboardFromDifferentUser && !dashboardShareIsActive) {
+		if (!Entry.hasAccess(user, this.dashboard, dashboardShare)) {
 			throw new Error(
 				'The current user is not authorized to change the data'
 			);
@@ -136,6 +133,28 @@ export default class Entry {
 
 		if (amount) {
 			this._amount = amount;
+		}
+	}
+
+	static hasAccess(
+		user: UserData,
+		dashboard: string,
+		dashboardShare: DashboardShare | null
+	) {
+		let dashboardFromCurrentUser = dashboard === user.id;
+		let dashboardShareIsActive =
+			dashboardShare && dashboardShare.isActive(dashboard, user.id);
+
+		return dashboardFromCurrentUser || dashboardShareIsActive;
+	}
+
+	public static checkIfCurrentUserCanList(
+		user: UserData,
+		dashboard: string,
+		dashboardShare: DashboardShare | null
+	) {
+		if (!Entry.hasAccess(user, dashboard, dashboardShare)) {
+			throw new Error('The current user is not authorized to list the data');
 		}
 	}
 }
