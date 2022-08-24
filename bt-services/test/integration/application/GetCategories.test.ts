@@ -81,7 +81,7 @@ describe('UseCase.GetCategories', () => {
 			dashboard: 'userId-1111',
 		};
 		await expect(getCategories.execute(input)).rejects.toThrow(
-			'The current user is not authorized to list the data'
+			'The current user is not authorized to list data'
 		);
 	});
 });
