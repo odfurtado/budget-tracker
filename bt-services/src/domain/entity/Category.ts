@@ -13,8 +13,17 @@ export default class Category {
 		this.id = id ? id : uuidv4();
 	}
 
-	canDelete(dashboard: string) {
-		return this.dashboard && this.dashboard === dashboard;
+	checkIfCurrentUserCanDelete(
+		user: UserData,
+		dashboardShare: DashboardShare | null
+	) {
+		if (!this.dashboard) {
+			throw new Error('Category could not be delete');
+		}
+
+		if (!Category.hasAccess(user, this.dashboard, dashboardShare)) {
+			throw new Error('The current user is not authorized to delete data');
+		}
 	}
 
 	static hasAccess(

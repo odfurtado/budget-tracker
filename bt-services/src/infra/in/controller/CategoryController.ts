@@ -47,10 +47,9 @@ export default class CategoryController {
 
 	delete = async (userData: UserData, params: any) => {
 		let input = {
-			user: {
-				id: userData.id,
-			},
-			id: params['id'],
+			user: userData,
+			dashboard: userData.id,
+			category: params['id'],
 		};
 		let message: string = '';
 		let status: number;
