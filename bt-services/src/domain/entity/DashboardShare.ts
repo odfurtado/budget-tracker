@@ -23,7 +23,10 @@ export default class DashboardShare {
 		this._approvedAt = approvedAt ? approvedAt : null;
 	}
 
-	acceptBy(userId: string) {
+	acceptBy(userId: string, userEmail: string) {
+		if (this.sharedWithEmail !== userEmail) {
+			throw new Error('Dashboard share not authorized for user');
+		}
 		if (this.status !== 'PendingApproval') {
 			throw new Error(
 				'Cannot accept a dashboard share with status != PendingApproval'
@@ -34,7 +37,10 @@ export default class DashboardShare {
 		this._status = 'Approved';
 	}
 
-	cancel() {
+	cancelBy(userEmail: string) {
+		if (this.sharedWithEmail !== userEmail) {
+			throw new Error('Dashboard share not authorized for user');
+		}
 		if (this.status === 'PendingApproval') {
 			this._status = 'Rejected';
 		} else if (this.status === 'Approved') {

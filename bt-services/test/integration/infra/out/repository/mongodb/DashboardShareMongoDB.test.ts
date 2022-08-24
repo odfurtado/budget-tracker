@@ -29,7 +29,7 @@ describe.skip('Repository.MongoDB.DashboardShareRepository', () => {
 		let dashboardShare = new DashboardShare(dashboardId, email);
 		await dashboardShareRepository.save(dashboardShare);
 		//Change data
-		dashboardShare.acceptBy('userId-user2');
+		dashboardShare.acceptBy('userId-user2', email);
 		await dashboardShareRepository.save(dashboardShare);
 		let dashboardShareSaved = (await dashboardShareRepository.get(
 			dashboardShare.id
