@@ -1,15 +1,31 @@
 import Category from '../domain/entity/Category';
+import UserData from '../domain/entity/UserData';
 import CategoryRepository from '../domain/repository/CategoryRepository';
+import DashboardShareRepository from '../domain/repository/DashboardShareRepository';
 import RepositoryFactory from '../domain/repository/RepositoryFactory';
 
 export default class GetCategories {
 	private categoryRepository: CategoryRepository;
+	private dashboardShareRepository: DashboardShareRepository;
+
 	constructor(repositoryFactory: RepositoryFactory) {
 		this.categoryRepository = repositoryFactory.createCategoryRepository();
+		this.dashboardShareRepository =
+			repositoryFactory.createDashboardShareRepository();
 	}
 
 	async execute(input: Input): Promise<Output> {
-		let categories = await this.categoryRepository.list(input.user.id);
+		let currentDashboardShare =
+			await this.dashboardShareRepository.getCurrent(
+				input.dashboard,
+				input.user.id
+			);
+		Category.checkIfCurrentUserCanList(
+			input.user,
+			input.dashboard,
+			currentDashboardShare
+		);
+		let categories = await this.categoryRepository.list(input.dashboard);
 		return {
 			categories,
 		};
@@ -17,9 +33,8 @@ export default class GetCategories {
 }
 
 type Input = {
-	user: {
-		id: string;
-	};
+	user: UserData;
+	dashboard: string;
 };
 
 type Output = {

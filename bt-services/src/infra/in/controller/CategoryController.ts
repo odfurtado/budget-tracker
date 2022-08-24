@@ -10,9 +10,8 @@ export default class CategoryController {
 
 	list = async (userData: UserData) => {
 		let input = {
-			user: {
-				id: userData.id,
-			},
+			user: userData,
+			dashboard: userData.id,
 		};
 		let output = await new GetCategories(this.repositoryFactory).execute(
 			input
