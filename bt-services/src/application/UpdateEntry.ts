@@ -1,11 +1,16 @@
+import DashboardShareRepository from '../domain/repository/DashboardShareRepository';
 import EntryRepository from '../domain/repository/EntryRepository';
 import RepositoryFactory from '../domain/repository/RepositoryFactory';
+import { UserData } from '../infra/in/security/Secutity';
 
 export default class UpdateEntry {
 	private entryRepository: EntryRepository;
+	private dashboardShareRepository: DashboardShareRepository;
 
 	constructor(readonly repositoryFactory: RepositoryFactory) {
 		this.entryRepository = repositoryFactory.createEntryRepository();
+		this.dashboardShareRepository =
+			repositoryFactory.createDashboardShareRepository();
 	}
 
 	async execute(id: string, input: Input): Promise<void> {
@@ -13,19 +18,17 @@ export default class UpdateEntry {
 		if (!entry) {
 			throw new Error('Entry not found!');
 		}
-		entry.define(
-			input.date,
-			input.type,
-			input.description,
-			input.category,
-			input.paymentType,
-			input.amount
+		let dashboardShare = await this.dashboardShareRepository.getCurrent(
+			entry.dashboard,
+			input.user.id
 		);
+		entry.update(input.user, dashboardShare, input);
 		await this.entryRepository.save(entry);
 	}
 }
 
 type Input = {
+	user: UserData;
 	date: Date;
 	type: 'cost' | 'income';
 	description: string;

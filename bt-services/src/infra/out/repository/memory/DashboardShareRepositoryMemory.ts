@@ -35,6 +35,22 @@ export default class DashboardShareRepositoryMemory
 		);
 	}
 
+	async getCurrent(
+		dashboard: string,
+		user: string
+	): Promise<DashboardShare | null> {
+		let dashboardShareFound = this.dashboardShares.filter(
+			(dashboardShare) =>
+				dashboardShare.dashboard === dashboard &&
+				dashboardShare.sharedWithUserId === user &&
+				dashboardShare.status === 'Approved'
+		);
+		if (dashboardShareFound && dashboardShareFound.length !== 0) {
+			return dashboardShareFound[0];
+		}
+		return null;
+	}
+
 	//For test only
 	async list(): Promise<DashboardShare[]> {
 		return this.dashboardShares;

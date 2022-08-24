@@ -59,6 +59,14 @@ export default class DashboardShare {
 	get approvedAt() {
 		return this._approvedAt;
 	}
+
+	isActive(dashboard: string, userId: string) {
+		return (
+			this.dashboard === dashboard &&
+			this.sharedWithUserId === userId &&
+			this.status === 'Approved'
+		);
+	}
 }
 
 type Status = 'PendingApproval' | 'Approved' | 'Rejected' | 'Cancelled';

@@ -5,6 +5,7 @@ export default interface DashboardShareRepository {
 	get(id: string): Promise<DashboardShare | null>;
 	getByUser(userId: string): Promise<DashboardShare[]>;
 	getByDashboard(dashboard: string): Promise<DashboardShare[]>;
+	getCurrent(dashboard: string, user: string): Promise<DashboardShare | null>;
 	//For test only
 	list(): Promise<DashboardShare[]>;
 	delete(id: string): Promise<void>;

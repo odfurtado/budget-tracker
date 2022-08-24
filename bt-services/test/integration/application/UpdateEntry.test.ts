@@ -1,43 +1,169 @@
 import UpdateEntry from '../../../src/application/UpdateEntry';
+import DashboardShare from '../../../src/domain/entity/DashboardShare';
 import Entry from '../../../src/domain/entity/Entry';
 import RepositoryFactory from '../../../src/domain/repository/RepositoryFactory';
 import MemoryRepositoryFactory from '../../../src/infra/out/repository/memory/MemoryRepositoryFactory';
 
 let repositoryFactory: RepositoryFactory;
 
-beforeEach(() => {
-	repositoryFactory = new MemoryRepositoryFactory();
-});
+describe('UseCase.UpdateEntry', () => {
+	beforeEach(() => {
+		repositoryFactory = new MemoryRepositoryFactory();
+	});
 
-test('should update an entry', async () => {
-	var entryRepository = repositoryFactory.createEntryRepository();
-	var entry = new Entry(
-		'userid-1111',
-		new Date('2022-11-01'),
-		'income',
-		'salary',
-		'salary',
-		'transfer',
-		7000
-	);
-	entryRepository.save(entry);
-	var input = {
-		date: new Date('2023-12-01'),
-		type: 'cost' as 'cost',
-		description: 'rock in rio',
-		category: 'fun',
-		paymentType: 'credit_card',
-		amount: 1000,
-	};
-	var updateEntry = new UpdateEntry(repositoryFactory);
-	await updateEntry.execute(entry.id, input);
-	var updatedEntry = (await entryRepository.get(entry.id)) as Entry;
-	expect(updateEntry).not.toBeNull();
-	expect(updatedEntry.month).toBe(12);
-	expect(updatedEntry.year).toBe(2023);
-	expect(updatedEntry.type).toBe('cost');
-	expect(updatedEntry.description).toBe('rock in rio');
-	expect(updatedEntry.category).toBe('fun');
-	expect(updatedEntry.paymentType).toBe('credit_card');
-	expect(updatedEntry.amount).toBe(1000);
+	test('Should update an entry', async () => {
+		let entryRepository = repositoryFactory.createEntryRepository();
+		let entry = new Entry(
+			'userId-1111',
+			new Date('2022-11-01'),
+			'income',
+			'salary',
+			'salary',
+			'transfer',
+			7000
+		);
+		entryRepository.save(entry);
+		let input = {
+			user: {
+				id: 'userId-1111',
+				name: '',
+				email: '',
+			},
+			date: new Date('2023-12-01'),
+			type: 'cost' as 'cost',
+			description: 'theather',
+			category: 'fun',
+			paymentType: 'credit_card',
+			amount: 1000,
+		};
+		await new UpdateEntry(repositoryFactory).execute(entry.id, input);
+		let entrySaved = (await entryRepository.get(entry.id)) as Entry;
+		expect(entrySaved).not.toBeNull();
+		expect(entrySaved.month).toBe(input.date.getUTCMonth() + 1);
+		expect(entrySaved.year).toBe(input.date.getUTCFullYear());
+		expect(entrySaved.type).toBe(input.type);
+		expect(entrySaved.description).toBe(input.description);
+		expect(entrySaved.category).toBe(input.category);
+		expect(entrySaved.paymentType).toBe(input.paymentType);
+		expect(entrySaved.amount).toBe(input.amount);
+	});
+
+	test('Should update an entry from other user that dashboard is shared', async () => {
+		let entryRepository = repositoryFactory.createEntryRepository();
+		let entry = new Entry(
+			'userId-1111',
+			new Date('2022-11-01'),
+			'income',
+			'salary',
+			'salary',
+			'transfer',
+			7000
+		);
+		await entryRepository.save(entry);
+		let dashboardShareRepository =
+			repositoryFactory.createDashboardShareRepository();
+		let dashboardShare = new DashboardShare(
+			'userId-1111',
+			'otheruser@mail.com',
+			'userId-2222',
+			'Approved',
+			new Date(),
+			new Date()
+		);
+		await dashboardShareRepository.save(dashboardShare);
+		let input = {
+			user: {
+				id: 'userId-2222',
+				name: '',
+				email: '',
+			},
+			date: new Date('2023-12-01'),
+			type: 'cost' as 'cost',
+			description: 'theather',
+			category: 'fun',
+			paymentType: 'credit_card',
+			amount: 1000,
+		};
+		await new UpdateEntry(repositoryFactory).execute(entry.id, input);
+		let entrySaved = (await entryRepository.get(entry.id)) as Entry;
+		expect(entrySaved).not.toBeNull();
+		expect(entrySaved.month).toBe(input.date.getUTCMonth() + 1);
+		expect(entrySaved.year).toBe(input.date.getUTCFullYear());
+		expect(entrySaved.type).toBe(input.type);
+		expect(entrySaved.description).toBe(input.description);
+		expect(entrySaved.category).toBe(input.category);
+		expect(entrySaved.paymentType).toBe(input.paymentType);
+		expect(entrySaved.amount).toBe(input.amount);
+	});
+
+	test('Cannot update an entry from other user that dashboard is not shared', async () => {
+		let entryRepository = repositoryFactory.createEntryRepository();
+		let entry = new Entry(
+			'userId-1111',
+			new Date('2022-11-01'),
+			'income',
+			'salary',
+			'salary',
+			'transfer',
+			7000
+		);
+		await entryRepository.save(entry);
+		let input = {
+			user: {
+				id: 'userId-2222',
+				name: '',
+				email: '',
+			},
+			date: new Date('2023-12-01'),
+			type: 'cost' as 'cost',
+			description: 'theather',
+			category: 'fun',
+			paymentType: 'credit_card',
+			amount: 1000,
+		};
+		await expect(
+			new UpdateEntry(repositoryFactory).execute(entry.id, input)
+		).rejects.toThrow(
+			'The current user is not authorized to change the data'
+		);
+		let entrySaved = (await entryRepository.get(entry.id)) as Entry;
+		expect(entrySaved).not.toBeNull();
+		expect(entrySaved.month).toBe(entry.date.getUTCMonth() + 1);
+		expect(entrySaved.year).toBe(entry.date.getUTCFullYear());
+		expect(entrySaved.type).toBe(entry.type);
+		expect(entrySaved.description).toBe(entry.description);
+		expect(entrySaved.category).toBe(entry.category);
+		expect(entrySaved.paymentType).toBe(entry.paymentType);
+		expect(entrySaved.amount).toBe(entry.amount);
+	});
+
+	test('Cannot update an invalid entry', async () => {
+		let entryRepository = repositoryFactory.createEntryRepository();
+		let entry = new Entry(
+			'userId-1111',
+			new Date('2022-11-01'),
+			'income',
+			'salary',
+			'salary',
+			'transfer',
+			7000
+		);
+		await entryRepository.save(entry);
+		let input = {
+			user: {
+				id: 'userId-2222',
+				name: '',
+				email: '',
+			},
+			date: new Date('2023-12-01'),
+			type: 'cost' as 'cost',
+			description: 'theather',
+			category: 'fun',
+			paymentType: 'credit_card',
+			amount: 1000,
+		};
+		await expect(
+			new UpdateEntry(repositoryFactory).execute('invalidentryid', input)
+		).rejects.toThrow('Entry not found');
+	});
 });

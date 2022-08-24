@@ -62,6 +62,21 @@ export default class DashboardShareRepositoryMongoDB
 		return models.map(this.mapModelToEntity);
 	}
 
+	async getCurrent(
+		dashboard: string,
+		user: string
+	): Promise<DashboardShare | null> {
+		let currentDashboardShare = await this.DashboardShareModel.findOne({
+			dashboard,
+			sharedWithUserId: user,
+			status: 'Approved',
+		});
+		if (currentDashboardShare) {
+			return this.mapModelToEntity(currentDashboardShare);
+		}
+		return null;
+	}
+
 	private mapModelToEntity(model: Model) {
 		return new DashboardShare(
 			model.dashboard,

@@ -1,5 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import addMonths from 'date-fns/addMonths';
+import { UserData } from '../../infra/in/security/Secutity';
+import DashboardShare from './DashboardShare';
 
 export default class Entry {
 	readonly id: string;
@@ -97,14 +99,19 @@ export default class Entry {
 		return this._amount;
 	}
 
-	define(
-		date?: Date,
-		type?: EntryType,
-		description?: string,
-		category?: string,
-		paymentType?: string,
-		amount?: number
+	update(
+		user: UserData,
+		dashboardShare: DashboardShare | null,
+		{ date, type, description, category, paymentType, amount }: UpdateData
 	) {
+		let dashboardFromDifferentUser = this.dashboard !== user.id;
+		let dashboardShareIsActive =
+			dashboardShare && dashboardShare.isActive(this.dashboard, user.id);
+		if (dashboardFromDifferentUser && !dashboardShareIsActive) {
+			throw new Error(
+				'The current user is not authorized to change the data'
+			);
+		}
 		if (date) {
 			this._date = date;
 			this._month = date.getUTCMonth() + 1;
@@ -134,3 +141,12 @@ export default class Entry {
 }
 
 export type EntryType = 'cost' | 'income';
+
+type UpdateData = {
+	date?: Date;
+	type?: EntryType;
+	description?: string;
+	category?: string;
+	paymentType?: string;
+	amount?: number;
+};

@@ -40,9 +40,7 @@ export default class EntryController {
 
 	update = async (userData: UserData, params: any, body: BodyUpdate) => {
 		let input = {
-			user: {
-				id: userData.id,
-			},
+			user: userData,
 			...body,
 			date: new Date(body.date),
 		};

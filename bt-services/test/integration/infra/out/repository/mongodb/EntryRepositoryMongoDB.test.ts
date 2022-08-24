@@ -48,17 +48,18 @@ describe.skip('Repository.MongoDB.EntryRepository', () => {
 			543.07
 		);
 		await entryRepository.save(entry);
-
-		entry.define(
-			new Date('2022-09-05'),
-			'cost',
-			'My other cost 02',
-			'Study',
-			'PIX',
-			514.07
-		);
+		let userData = { id: dashboard, name: '', email: '' };
+		let dashboardShare = null;
+		let updateData = {
+			date: new Date('2022-09-05'),
+			type: 'cost' as 'cost',
+			description: 'My other cost 02',
+			category: 'Study',
+			paymentType: 'PIX',
+			amount: 514.07,
+		};
+		entry.update(userData, dashboardShare, updateData);
 		await entryRepository.save(entry);
-
 		let entrySaved = await entryRepository.get(entry.id);
 		expect(entrySaved?.id).toBe(entry.id);
 		expect(entrySaved?.date).toStrictEqual(entry.date);
