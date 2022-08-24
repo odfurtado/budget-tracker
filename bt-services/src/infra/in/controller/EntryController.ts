@@ -1,9 +1,9 @@
 import CreateEntry from '../../../application/CreateEntry';
 import GetEntries from '../../../application/GetEntries';
 import UpdateEntry from '../../../application/UpdateEntry';
+import UserData from '../../../domain/entity/UserData';
 import RepositoryFactory from '../../../domain/repository/RepositoryFactory';
 import Http from '../http/Http';
-import { UserData } from '../security/Secutity';
 
 export default class EntryController {
 	constructor(private repositoryFactory: RepositoryFactory) {}

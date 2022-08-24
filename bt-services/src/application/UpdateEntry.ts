@@ -1,7 +1,7 @@
+import UserData from '../domain/entity/UserData';
 import DashboardShareRepository from '../domain/repository/DashboardShareRepository';
 import EntryRepository from '../domain/repository/EntryRepository';
 import RepositoryFactory from '../domain/repository/RepositoryFactory';
-import { UserData } from '../infra/in/security/Secutity';
 
 export default class UpdateEntry {
 	private entryRepository: EntryRepository;

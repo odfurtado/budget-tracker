@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import addMonths from 'date-fns/addMonths';
-import { UserData } from '../../infra/in/security/Secutity';
 import DashboardShare from './DashboardShare';
+import UserData from './UserData';
 
 export default class Entry {
 	readonly id: string;

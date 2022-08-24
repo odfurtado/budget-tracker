@@ -1,9 +1,9 @@
 import CreateCategory from '../../../application/CreateCategory';
 import DeleteCategory from '../../../application/DeleteCategory';
 import GetCategories from '../../../application/GetCategories';
+import UserData from '../../../domain/entity/UserData';
 import RepositoryFactory from '../../../domain/repository/RepositoryFactory';
 import Http from '../http/Http';
-import { UserData } from '../security/Secutity';
 
 export default class CategoryController {
 	constructor(private repositoryFactory: RepositoryFactory) {}

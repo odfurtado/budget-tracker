@@ -1,5 +1,6 @@
-import Security, { UserData } from './Secutity';
 import { google } from 'googleapis';
+import UserData from '../../../domain/entity/UserData';
+import Security from './Secutity';
 
 export default class GoogleSecurity implements Security {
 	async extract(token: string): Promise<UserData | null> {

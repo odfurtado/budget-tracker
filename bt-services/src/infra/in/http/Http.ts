@@ -1,4 +1,4 @@
-import { UserData } from '../security/Secutity';
+import UserData from '../../../domain/entity/UserData';
 
 export default interface Http {
 	on(method: string, url: string, callback: CallbackFunction): void;
