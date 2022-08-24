@@ -157,6 +157,16 @@ export default class Entry {
 			throw new Error('The current user is not authorized to list the data');
 		}
 	}
+
+	public static checkIfCurrentUserCanCreate(
+		user: UserData,
+		dashboard: string,
+		dashboardShare: DashboardShare | null
+	) {
+		if (!Entry.hasAccess(user, dashboard, dashboardShare)) {
+			throw new Error('The current user is not authorized to create data');
+		}
+	}
 }
 
 export type EntryType = 'cost' | 'income';
