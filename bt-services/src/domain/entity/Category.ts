@@ -44,7 +44,17 @@ export default class Category {
 		dashboardShare: DashboardShare | null
 	) {
 		if (!Category.hasAccess(user, dashboard, dashboardShare)) {
-			throw new Error('The current user is not authorized to list the data');
+			throw new Error('The current user is not authorized to list data');
+		}
+	}
+
+	public static checkIfCurrentUserCanCreate(
+		user: UserData,
+		dashboard: string,
+		dashboardShare: DashboardShare | null
+	) {
+		if (!Category.hasAccess(user, dashboard, dashboardShare)) {
+			throw new Error('The current user is not authorized to create data');
 		}
 	}
 }

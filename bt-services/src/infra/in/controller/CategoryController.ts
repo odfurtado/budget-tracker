@@ -24,9 +24,8 @@ export default class CategoryController {
 
 	save = async (userData: UserData, _: any, body: BodySave) => {
 		let input = {
-			user: {
-				id: userData.id,
-			},
+			user: userData,
+			dashboard: userData.id,
 			...body,
 		};
 		try {
