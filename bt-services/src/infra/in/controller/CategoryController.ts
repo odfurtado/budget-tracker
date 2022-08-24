@@ -3,14 +3,15 @@ import DeleteCategory from '../../../application/DeleteCategory';
 import GetCategories from '../../../application/GetCategories';
 import RepositoryFactory from '../../../domain/repository/RepositoryFactory';
 import Http from '../http/Http';
+import { UserData } from '../security/Secutity';
 
 export default class CategoryController {
 	constructor(private repositoryFactory: RepositoryFactory) {}
 
-	list = async (userid: string) => {
+	list = async (userData: UserData) => {
 		let input = {
 			user: {
-				id: userid,
+				id: userData.id,
 			},
 		};
 		let output = await new GetCategories(this.repositoryFactory).execute(
@@ -22,10 +23,10 @@ export default class CategoryController {
 		};
 	};
 
-	save = async (userid: string, _: any, body: BodySave) => {
+	save = async (userData: UserData, _: any, body: BodySave) => {
 		let input = {
 			user: {
-				id: userid,
+				id: userData.id,
 			},
 			...body,
 		};
@@ -45,10 +46,10 @@ export default class CategoryController {
 		}
 	};
 
-	delete = async (userid: string, params: any) => {
+	delete = async (userData: UserData, params: any) => {
 		let input = {
 			user: {
-				id: userid,
+				id: userData.id,
 			},
 			id: params['id'],
 		};

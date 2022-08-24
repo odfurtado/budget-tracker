@@ -1,3 +1,5 @@
+import { UserData } from '../security/Secutity';
+
 export default interface Http {
 	on(method: string, url: string, callback: CallbackFunction): void;
 	secure(validator: any): void;
@@ -10,8 +12,9 @@ export type CallbackOutput =
 			status?: number;
 	  }>
 	| Promise<void>;
+
 export type CallbackFunction = (
-	userId: string,
+	userData: UserData,
 	params: any,
 	body: any
 ) => CallbackOutput;

@@ -22,7 +22,7 @@ export default class ExpressAdapter implements Http {
 					...req.params,
 					...req.query,
 				};
-				const result = await callback(req.userid, params, req.body);
+				const result = await callback(req.userData, params, req.body);
 				if (result?.status) {
 					res.status(result.status);
 				}
@@ -40,12 +40,12 @@ export default class ExpressAdapter implements Http {
 	secure(security: Security) {
 		this.app.use(async (req: any, res: any, next: any) => {
 			let token = req.get('Authorization');
-			let userId = await security.extract(token);
-			if (!userId) {
+			let userData = await security.extract(token);
+			if (!userData) {
 				res.status(401).send('Unauthorized');
 				return;
 			}
-			req.userid = userId;
+			req.userData = userData;
 			next();
 		});
 	}

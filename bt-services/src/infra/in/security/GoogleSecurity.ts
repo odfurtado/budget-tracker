@@ -1,8 +1,8 @@
-import Security from './Secutity';
+import Security, { UserData } from './Secutity';
 import { google } from 'googleapis';
 
 export default class GoogleSecurity implements Security {
-	async extract(token: string): Promise<string | null> {
+	async extract(token: string): Promise<UserData | null> {
 		try {
 			const oauth2 = google.oauth2({
 				version: 'v2',
@@ -13,7 +13,11 @@ export default class GoogleSecurity implements Security {
 			let userInfo = await oauth2.userinfo.get();
 
 			if (userInfo && userInfo.data) {
-				return userInfo.data.id as string;
+				return {
+					id: userInfo.data.id as string,
+					email: userInfo.data.email as string,
+					name: userInfo.data.name as string,
+				};
 			}
 		} catch (e: any) {
 			console.log('GoogleSecurity.extract :: ERROR :: ', e.message);

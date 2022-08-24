@@ -10,21 +10,37 @@ test('Should list all categories', async () => {
 	await categoryRepository.save(new Category('dashboard1', 'Category 3'));
 	await categoryRepository.save(new Category('dashboard2', 'Category 4'));
 	let categoryController = new CategoryController(repositoryFactory);
-	let result = await categoryController.list('dashboard1');
+	let result = await categoryController.list({
+		id: 'dashboard1',
+		name: '',
+		email: '',
+	});
 	expect(result.output).toHaveLength(3);
 	expect(result.status).toBe(200);
-	result = await categoryController.list('dashboard2');
+	result = await categoryController.list({
+		id: 'dashboard2',
+		name: '',
+		email: '',
+	});
 	expect(result.output).toHaveLength(1);
 });
 
 test('Should save category', async () => {
 	let repositoryFactory = new MemoryRepositoryFactory();
 	let categoryController = new CategoryController(repositoryFactory);
-	let resultSave = await categoryController.save('dashboard1', null, {
-		name: 'My Category',
-	});
+	let resultSave = await categoryController.save(
+		{ id: 'dashboard1', name: '', email: '' },
+		null,
+		{
+			name: 'My Category',
+		}
+	);
 	expect(resultSave.status).toBe(201);
-	let resultList = await categoryController.list('dashboard1');
+	let resultList = await categoryController.list({
+		id: 'dashboard1',
+		name: '',
+		email: '',
+	});
 	expect(resultList.output).toHaveLength(1);
 });
 
@@ -32,12 +48,16 @@ test('Should not save a empty category', async () => {
 	let repositoryFactory = new MemoryRepositoryFactory();
 	let categoryController = new CategoryController(repositoryFactory);
 	let resultSave = await categoryController.save(
-		'dashboard1',
+		{ id: 'dashboard1', name: '', email: '' },
 		null,
 		{} as any
 	);
 	expect(resultSave.status).toBe(400);
-	let resultList = await categoryController.list('dashboard1');
+	let resultList = await categoryController.list({
+		id: 'dashboard1',
+		name: '',
+		email: '',
+	});
 	expect(resultList.output).toHaveLength(0);
 });
 
@@ -47,10 +67,17 @@ test('Should delete a category', async () => {
 	let category = new Category('dashboard1', 'Category 1');
 	await categoryRepository.save(category);
 	let categoryController = new CategoryController(repositoryFactory);
-	let resultDelete = await categoryController.delete('dashboard1', {
-		id: category.id,
-	});
+	let resultDelete = await categoryController.delete(
+		{ id: 'dashboard1', name: '', email: '' },
+		{
+			id: category.id,
+		}
+	);
 	expect(resultDelete.status).toBe(200);
-	let resultList = await categoryController.list('dashboard1');
+	let resultList = await categoryController.list({
+		id: 'dashboard1',
+		name: '',
+		email: '',
+	});
 	expect(resultList.output).toHaveLength(0);
 });

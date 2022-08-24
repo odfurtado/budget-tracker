@@ -3,14 +3,15 @@ import GetEntries from '../../../application/GetEntries';
 import UpdateEntry from '../../../application/UpdateEntry';
 import RepositoryFactory from '../../../domain/repository/RepositoryFactory';
 import Http from '../http/Http';
+import { UserData } from '../security/Secutity';
 
 export default class EntryController {
 	constructor(private repositoryFactory: RepositoryFactory) {}
 
-	list = async (userId: string, params: any) => {
+	list = async (userData: UserData, params: any) => {
 		let input = {
 			user: {
-				id: userId,
+				id: userData.id,
 			},
 			month: params['month'],
 			year: params['year'],
@@ -22,10 +23,10 @@ export default class EntryController {
 		};
 	};
 
-	save = async (userId: string, _: any, body: BodySave) => {
+	save = async (userData: UserData, _: any, body: BodySave) => {
 		let input = {
 			user: {
-				id: userId,
+				id: userData.id,
 			},
 			...body,
 			date: new Date(body.date),
@@ -37,10 +38,10 @@ export default class EntryController {
 		};
 	};
 
-	update = async (userId: string, params: any, body: BodyUpdate) => {
+	update = async (userData: UserData, params: any, body: BodyUpdate) => {
 		let input = {
 			user: {
-				id: userId,
+				id: userData.id,
 			},
 			...body,
 			date: new Date(body.date),
