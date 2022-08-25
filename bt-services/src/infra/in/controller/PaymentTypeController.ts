@@ -7,10 +7,7 @@ export default class PaymentTypeController {
 
 	list = async () => {
 		let output = await new GetPaymentTypes(this.repositoryFactory).execute();
-		return {
-			output: output.paymentTypes,
-			status: 200,
-		};
+		return output.paymentTypes;
 	};
 
 	public bind(http: Http) {

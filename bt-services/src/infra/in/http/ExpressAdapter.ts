@@ -22,14 +22,14 @@ export default class ExpressAdapter implements Http {
 					...req.params,
 					...req.query,
 				};
-				const result = await callback(req.userData, params, req.body);
-				if (result?.status) {
-					res.status(result.status);
-				}
-				if (result?.output) {
-					res.json(result.output);
+				const responseData = await callback(req.userData, params, req.body);
+				if (responseData.output) {
+					if (responseData?.status) {
+						res.status(responseData.status);
+					}
+					res.json(responseData.output);
 				} else {
-					res.send();
+					res.json(responseData);
 				}
 			} catch (e: any) {
 				res.status(500).json(e.message);

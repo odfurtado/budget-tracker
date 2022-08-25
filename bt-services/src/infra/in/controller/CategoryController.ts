@@ -16,10 +16,7 @@ export default class CategoryController {
 		let output = await new GetCategories(this.repositoryFactory).execute(
 			input
 		);
-		return {
-			output: output.categories,
-			status: 200,
-		};
+		return output.categories;
 	};
 
 	save = async (userData: UserData, _: any, body: BodySave) => {

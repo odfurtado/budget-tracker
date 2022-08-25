@@ -16,10 +16,7 @@ export default class EntryController {
 			year: params['year'],
 		};
 		let output = await new GetEntries(this.repositoryFactory).execute(input);
-		return {
-			output: output.entries,
-			status: 200,
-		};
+		return output.entries;
 	};
 
 	save = async (userData: UserData, _: any, body: BodySave) => {
@@ -43,14 +40,7 @@ export default class EntryController {
 			date: new Date(body.date),
 		};
 		let entryId = params['id'];
-		let output = await new UpdateEntry(this.repositoryFactory).execute(
-			entryId,
-			input
-		);
-		return {
-			output: '',
-			status: 200,
-		};
+		await new UpdateEntry(this.repositoryFactory).execute(entryId, input);
 	};
 
 	public bind(http: Http) {

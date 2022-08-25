@@ -6,12 +6,12 @@ export default interface Http {
 	listen(port: number): void;
 }
 
-export type CallbackOutput =
-	| Promise<{
-			output?: any;
-			status?: number;
-	  }>
-	| Promise<void>;
+export type ResponseData = {
+	output?: any;
+	status?: number;
+};
+
+export type CallbackOutput = Promise<ResponseData | any>;
 
 export type CallbackFunction = (
 	userData: UserData,
