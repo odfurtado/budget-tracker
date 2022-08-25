@@ -29,6 +29,12 @@ export default class DashboardShareRepositoryMemory
 		);
 	}
 
+	async getByEmail(userEmail: string): Promise<DashboardShare[]> {
+		return this.dashboardShares.filter(
+			(dashboardShare) => dashboardShare.sharedWithEmail === userEmail
+		);
+	}
+
 	async getByDashboard(dashboard: string): Promise<DashboardShare[]> {
 		return this.dashboardShares.filter(
 			(dashboardShare) => dashboardShare.dashboard === dashboard

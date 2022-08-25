@@ -55,6 +55,13 @@ export default class DashboardShareRepositoryMongoDB
 		return models.map(this.mapModelToEntity);
 	}
 
+	async getByEmail(userEmail: string): Promise<DashboardShare[]> {
+		let models = await this.DashboardShareModel.find({
+			sharedWithEmail: userEmail,
+		});
+		return models.map(this.mapModelToEntity);
+	}
+
 	async getByDashboard(dashboard: string): Promise<DashboardShare[]> {
 		let models = await this.DashboardShareModel.find({
 			dashboard: dashboard,
