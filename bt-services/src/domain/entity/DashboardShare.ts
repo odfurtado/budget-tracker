@@ -23,7 +23,10 @@ export default class DashboardShare {
 		this._approvedAt = approvedAt ? approvedAt : null;
 	}
 
-	acceptBy(userId: string, userEmail: string) {
+	acceptBy(dashboard: string, userId: string, userEmail: string) {
+		if (dashboard !== this.dashboard) {
+			throw new Error('Dashboard share not authorized for user');
+		}
 		if (this.sharedWithEmail !== userEmail) {
 			throw new Error('Dashboard share not authorized for user');
 		}
@@ -37,7 +40,10 @@ export default class DashboardShare {
 		this._status = 'Approved';
 	}
 
-	cancelBy(userEmail: string) {
+	cancelBy(dashboard: string, userEmail: string) {
+		if (dashboard !== this.dashboard) {
+			throw new Error('Dashboard share not authorized for user');
+		}
 		if (this.sharedWithEmail !== userEmail) {
 			throw new Error('Dashboard share not authorized for user');
 		}

@@ -11,17 +11,18 @@ export default class CancelDashboardShare {
 
 	async execute(input: Input): Promise<void> {
 		let dashboardShare = await this.dashboardShareRepository.get(
-			input.dashboardShareId
+			input.dashboardShare
 		);
 		if (!dashboardShare) {
 			throw new Error('Dashboard share not found or not authorized');
 		}
-		dashboardShare.cancelBy(input.user.email);
+		dashboardShare.cancelBy(input.dashboard, input.user.email);
 		await this.dashboardShareRepository.save(dashboardShare);
 	}
 }
 
 type Input = {
 	user: UserData;
-	dashboardShareId: string;
+	dashboard: string;
+	dashboardShare: string;
 };

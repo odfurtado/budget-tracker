@@ -4,6 +4,8 @@ import RepositoryFactory from '../../src/domain/repository/RepositoryFactory';
 
 export default class DashboardDataGenerator {
 	private readonly dashboardShareRepository: DashboardShareRepository;
+	private dashboardsShare: DashboardShare[] = [];
+
 	constructor(
 		private readonly dashboard: string,
 		private readonly repositoryFactory: RepositoryFactory
@@ -14,9 +16,11 @@ export default class DashboardDataGenerator {
 
 	pendingShareWith(sharedWithEmail: string) {
 		let dashboardShare = new DashboardShare(this.dashboard, sharedWithEmail);
+		this.dashboardsShare.push(dashboardShare);
 		this.dashboardShareRepository.save(dashboardShare);
-		return this;
+		return dashboardShare.id;
 	}
+
 	approvedShareWith(sharedWithEmail: string, sharedWithId: string) {
 		let dashboardShare = new DashboardShare(
 			this.dashboard,
@@ -26,9 +30,11 @@ export default class DashboardDataGenerator {
 			new Date(),
 			new Date()
 		);
+		this.dashboardsShare.push(dashboardShare);
 		this.dashboardShareRepository.save(dashboardShare);
-		return this;
+		return dashboardShare.id;
 	}
+
 	rejectedShareWith(sharedWithEmail: string) {
 		let dashboardShare = new DashboardShare(
 			this.dashboard,
@@ -36,9 +42,11 @@ export default class DashboardDataGenerator {
 			undefined,
 			'Rejected'
 		);
+		this.dashboardsShare.push(dashboardShare);
 		this.dashboardShareRepository.save(dashboardShare);
-		return this;
+		return dashboardShare.id;
 	}
+
 	cancelledShareWith(sharedWithEmail: string, sharedWithId: string) {
 		let dashboardShare = new DashboardShare(
 			this.dashboard,
@@ -48,7 +56,12 @@ export default class DashboardDataGenerator {
 			new Date(),
 			new Date()
 		);
+		this.dashboardsShare.push(dashboardShare);
 		this.dashboardShareRepository.save(dashboardShare);
-		return this;
+		return dashboardShare.id;
+	}
+
+	getDashboardsShare() {
+		return this.dashboardsShare;
 	}
 }

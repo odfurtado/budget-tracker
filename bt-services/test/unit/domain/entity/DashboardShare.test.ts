@@ -19,7 +19,7 @@ describe('Entity.DashboardShare', () => {
 		let email = 'validuser@mail.com';
 		let dashboardShare = new DashboardShare(dashboard, email);
 		let userId = 'userId-2222';
-		dashboardShare.acceptBy(userId, email);
+		dashboardShare.acceptBy(dashboard, userId, email);
 		expect(dashboardShare.id).not.toBeNull();
 		expect(dashboardShare.dashboard).toBe(dashboard);
 		expect(dashboardShare.status).toBe('Approved');
@@ -41,7 +41,9 @@ describe('Entity.DashboardShare', () => {
 			new Date()
 		);
 		let userId = 'userId-2222';
-		expect(() => dashboardShare.acceptBy(userId, email)).toThrowError(
+		expect(() =>
+			dashboardShare.acceptBy(dashboard, userId, email)
+		).toThrowError(
 			'Cannot accept a dashboard share with status != PendingApproval'
 		);
 	});
@@ -59,7 +61,7 @@ describe('Entity.DashboardShare', () => {
 		);
 		let userId = 'userId-2222';
 		expect(() =>
-			dashboardShare.acceptBy(userId, 'invaliduser@email.com')
+			dashboardShare.acceptBy(dashboard, userId, 'invaliduser@email.com')
 		).toThrowError('Dashboard share not authorized for user');
 	});
 
@@ -67,7 +69,7 @@ describe('Entity.DashboardShare', () => {
 		let dashboard = 'userId-1111';
 		let email = 'validuser@mail.com';
 		let dashboardShare = new DashboardShare(dashboard, email);
-		dashboardShare.cancelBy('validuser@mail.com');
+		dashboardShare.cancelBy(dashboard, 'validuser@mail.com');
 		expect(dashboardShare.id).not.toBeNull();
 		expect(dashboardShare.dashboard).toBe(dashboard);
 		expect(dashboardShare.status).toBe('Rejected');
@@ -88,7 +90,7 @@ describe('Entity.DashboardShare', () => {
 			new Date(),
 			new Date()
 		);
-		dashboardShare.cancelBy('validuser@mail.com');
+		dashboardShare.cancelBy(dashboard, 'validuser@mail.com');
 		expect(dashboardShare.id).not.toBeNull();
 		expect(dashboardShare.dashboard).toBe(dashboard);
 		expect(dashboardShare.status).toBe('Cancelled');
@@ -104,7 +106,7 @@ describe('Entity.DashboardShare', () => {
 		let dashboardShare = new DashboardShare(dashboard, email);
 
 		expect(() =>
-			dashboardShare.cancelBy('invaliduser@mail.com')
+			dashboardShare.cancelBy(dashboard, 'invaliduser@mail.com')
 		).toThrowError('Dashboard share not authorized for user');
 	});
 });

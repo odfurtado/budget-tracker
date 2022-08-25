@@ -23,7 +23,7 @@ export default class ExpressAdapter implements Http {
 					...req.query,
 				};
 				const responseData = await callback(req.userData, params, req.body);
-				if (responseData.output) {
+				if (responseData && responseData.output) {
 					if (responseData?.status) {
 						res.status(responseData.status);
 					}

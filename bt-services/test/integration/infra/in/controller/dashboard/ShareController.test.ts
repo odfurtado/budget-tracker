@@ -13,16 +13,10 @@ describe('Controller.Dashboard.ShareController', () => {
 	});
 
 	test('List all dashboard share of user', async () => {
-		given
-			.dashboard('userId-1111')
-			.pendingShareWith('anotherUser02@mail.com')
-			.approvedShareWith('anotherUser03@mail.com', 'userId-3333')
-			.rejectedShareWith('anotherUser04@mail.com');
-		given
-			.dashboard('userId-2222')
-			.approvedShareWith('user01@mail.com', 'userId-1111')
-			.cancelledShareWith('anotheruser04@mail.com.br', 'userId-4444');
-		given.dashboard('userId-5555').pendingShareWith('user01@mail.com');
+		let dashboard = given.dashboard('userId-1111');
+		dashboard.pendingShareWith('anotherUser02@mail.com');
+		dashboard.approvedShareWith('anotherUser03@mail.com', 'userId-3333');
+		dashboard.rejectedShareWith('anotherUser04@mail.com');
 		let userData = {
 			id: 'userId-1111',
 			name: 'User 01',
@@ -33,7 +27,75 @@ describe('Controller.Dashboard.ShareController', () => {
 			{ dashboard: userData.id }
 		);
 		expect(responseData).not.toBeNull();
-		expect(responseData.shared).toHaveLength(3);
-		expect(responseData.sharedWithMe).toHaveLength(2);
+		expect(responseData).toHaveLength(3);
+	});
+
+	test('Should create a dashboard share', async () => {
+		let params = {
+			dashboard: 'userId-1111',
+		};
+		let body = {
+			email: 'anotheruser@mail.com',
+		};
+		let userData = {
+			id: 'userId-1111',
+			name: 'User 01',
+			email: 'user01@mail.com',
+		};
+		let result = await new ShareController(repositoryFactory).save(
+			userData,
+			params,
+			body
+		);
+		expect(result).not.toBeNull();
+		expect(result.output).not.toBeNull();
+		expect(result.status).toBe(201);
+	});
+
+	test('Should accept a dashboard share', async () => {
+		let dashboardShareId = given
+			.dashboard('userId-1111')
+			.pendingShareWith('user02@mail.com');
+		let params = {
+			dashboard: 'userId-1111',
+			id: dashboardShareId,
+		};
+		let userData = {
+			id: 'userId-2222',
+			name: 'User 02',
+			email: 'user02@mail.com',
+		};
+		await new ShareController(repositoryFactory).accept(userData, params);
+		let dashboardsShare = await repositoryFactory
+			.createDashboardShareRepository()
+			.getByDashboard(params.dashboard);
+		expect(dashboardsShare).toHaveLength(1);
+		expect(dashboardsShare[0].dashboard).toBe(params.dashboard);
+		expect(dashboardsShare[0].sharedWithUserId).toBe(userData.id);
+		expect(dashboardsShare[0].sharedWithEmail).toBe(userData.email);
+		expect(dashboardsShare[0].status).toBe('Approved');
+	});
+
+	test('Should cancel a dashboard share', async () => {
+		let dashboardShareId = given
+			.dashboard('userId-1111')
+			.pendingShareWith('user02@mail.com');
+		let params = {
+			dashboard: 'userId-1111',
+			id: dashboardShareId,
+		};
+		let userData = {
+			id: 'userId-2222',
+			name: 'User 02',
+			email: 'user02@mail.com',
+		};
+		await new ShareController(repositoryFactory).cancel(userData, params);
+		let dashboardsShare = await repositoryFactory
+			.createDashboardShareRepository()
+			.getByDashboard(params.dashboard);
+		expect(dashboardsShare).toHaveLength(1);
+		expect(dashboardsShare[0].dashboard).toBe(params.dashboard);
+		expect(dashboardsShare[0].sharedWithEmail).toBe(userData.email);
+		expect(dashboardsShare[0].status).toBe('Rejected');
 	});
 });

@@ -18,7 +18,8 @@ describe('UseCase.AcceptDashboardShare', () => {
 				name: '',
 				email: 'validuser@mail.com',
 			},
-			dashboardShareId: dashboardShare.id,
+			dashboard: dashboardShare.dashboard,
+			dashboardShare: dashboardShare.id,
 		};
 		await new AcceptDashboardShare(repositoryFactory).execute(input);
 		let dashboardShareSaved = (await dashboardShareRepository.get(
@@ -46,7 +47,8 @@ describe('UseCase.AcceptDashboardShare', () => {
 				name: '',
 				email: 'validuser@mail.com',
 			},
-			dashboardShareId: dashboardShare.id,
+			dashboard: dashboardShare.dashboard,
+			dashboardShare: dashboardShare.id,
 		};
 		await expect(
 			new AcceptDashboardShare(repositoryFactory).execute(input)
@@ -72,7 +74,8 @@ describe('UseCase.AcceptDashboardShare', () => {
 				name: '',
 				email: 'validuser@mail.com',
 			},
-			dashboardShareId: dashboardShare.id,
+			dashboard: dashboardShare.dashboard,
+			dashboardShare: dashboardShare.id,
 		};
 		await expect(
 			new AcceptDashboardShare(repositoryFactory).execute(input)
@@ -100,7 +103,8 @@ describe('UseCase.AcceptDashboardShare', () => {
 				name: '',
 				email: 'validuser@mail.com',
 			},
-			dashboardShareId: dashboardShare.id,
+			dashboard: dashboardShare.dashboard,
+			dashboardShare: dashboardShare.id,
 		};
 		await expect(
 			new AcceptDashboardShare(repositoryFactory).execute(input)
@@ -124,7 +128,8 @@ describe('UseCase.AcceptDashboardShare', () => {
 				name: '',
 				email: 'invaliduser@mail.com',
 			},
-			dashboardShareId: dashboardShare.id,
+			dashboard: dashboardShare.dashboard,
+			dashboardShare: dashboardShare.id,
 		};
 		await expect(
 			new AcceptDashboardShare(repositoryFactory).execute(input)

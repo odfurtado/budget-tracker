@@ -1,3 +1,6 @@
+import AcceptDashboardShare from '../../../../application/AcceptDashboardShare';
+import CancelDashboardShare from '../../../../application/CancelDashboardShare';
+import CreateDashboardShare from '../../../../application/CreateDashboardShare';
 import DashboardShare from '../../../../domain/entity/DashboardShare';
 import UserData from '../../../../domain/entity/UserData';
 import RepositoryFactory from '../../../../domain/repository/RepositoryFactory';
@@ -6,24 +9,53 @@ import Http from '../../http/Http';
 export default class ShareController {
 	private readonly dashboardShareRepository;
 
-	constructor(repositoryFactory: RepositoryFactory) {
+	constructor(private readonly repositoryFactory: RepositoryFactory) {
 		this.dashboardShareRepository =
-			repositoryFactory.createDashboardShareRepository();
+			this.repositoryFactory.createDashboardShareRepository();
 	}
 
 	list = async (userData: UserData, req: any) => {
 		let dashboard = req['dashboard'];
-		let shared: DashboardShare[] = [];
-		if (dashboard === userData.id) {
-			shared = await this.dashboardShareRepository.getByDashboard(dashboard);
+		if (dashboard !== userData.id) {
+			throw new Error('Cannot list the dashboard share');
 		}
-		let sharedWithMe = await this.dashboardShareRepository.getByEmail(
-			userData.email
+		let dashboardShared = await this.dashboardShareRepository.getByDashboard(
+			dashboard
 		);
-		return {
-			shared: shared.map(this.mapEntityToShareData),
-			sharedWithMe: sharedWithMe.map(this.mapEntityToShareData),
+		return dashboardShared.map(this.mapEntityToShareData);
+	};
+
+	save = async (userData: UserData, params: any, body: any) => {
+		let input = {
+			user: userData,
+			dashboard: params['dashboard'],
+			shareWith: body.email,
 		};
+		let output = await new CreateDashboardShare(
+			this.repositoryFactory
+		).execute(input);
+		return {
+			output,
+			status: 201,
+		};
+	};
+
+	accept = async (userData: UserData, params: any) => {
+		let input = {
+			user: userData,
+			dashboard: params['dashboard'],
+			dashboardShare: params['id'],
+		};
+		await new AcceptDashboardShare(this.repositoryFactory).execute(input);
+	};
+
+	cancel = async (userData: UserData, params: any) => {
+		let input = {
+			user: userData,
+			dashboard: params['dashboard'],
+			dashboardShare: params['id'],
+		};
+		await new CancelDashboardShare(this.repositoryFactory).execute(input);
 	};
 
 	private mapEntityToShareData(dashboardShare: DashboardShare): ShareData {
@@ -41,7 +73,10 @@ export default class ShareController {
 	}
 
 	bind(http: Http) {
-		http.on('get', '/dashboard/{dashboard/share', this.list);
+		http.on('get', '/dashboard/{dashboard}/share', this.list);
+		http.on('post', '/dashboard/{dashboard}/share', this.save);
+		http.on('put', '/dashboard/{dashboard}/share/{id}', this.accept);
+		http.on('delete', '/dashboard/{dashboard}/share/{id}', this.cancel);
 	}
 }
 

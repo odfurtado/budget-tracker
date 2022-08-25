@@ -11,7 +11,7 @@ export default class CreateDashboardShare {
 			repositoryFactory.createDashboardShareRepository();
 	}
 
-	async execute(input: Input): Promise<void> {
+	async execute(input: Input): Promise<string> {
 		if (input.dashboard !== input.user.id) {
 			throw new Error('Cannot share this dashboard');
 		}
@@ -25,6 +25,7 @@ export default class CreateDashboardShare {
 		}
 		let dashboardShare = new DashboardShare(input.dashboard, input.shareWith);
 		await this.dashboardShareRepository.save(dashboardShare);
+		return dashboardShare.id;
 	}
 
 	private async getPendingOrApprovedDashboardShare(
