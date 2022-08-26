@@ -1,5 +1,6 @@
 import Category from '../../src/domain/entity/Category';
 import DashboardShare from '../../src/domain/entity/DashboardShare';
+import Entry, { EntryType } from '../../src/domain/entity/Entry';
 import DashboardShareRepository from '../../src/domain/repository/DashboardShareRepository';
 import RepositoryFactory from '../../src/domain/repository/RepositoryFactory';
 
@@ -61,5 +62,26 @@ export default class DashboardDataGenerator {
 		let category = new Category(this.dashboard, name);
 		this.repositoryFactory.createCategoryRepository().save(category);
 		return category.id;
+	}
+
+	entry(
+		date: Date,
+		type: EntryType,
+		description: string,
+		category: string,
+		paymentType: string,
+		amount: number
+	) {
+		let entry = new Entry(
+			this.dashboard,
+			date,
+			type,
+			description,
+			category,
+			paymentType,
+			amount
+		);
+		this.repositoryFactory.createEntryRepository().save(entry);
+		return entry.id;
 	}
 }

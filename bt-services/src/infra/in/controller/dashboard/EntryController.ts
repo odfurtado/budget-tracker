@@ -1,17 +1,17 @@
-import CreateEntry from '../../../application/CreateEntry';
-import GetEntries from '../../../application/GetEntries';
-import UpdateEntry from '../../../application/UpdateEntry';
-import UserData from '../../../domain/entity/UserData';
-import RepositoryFactory from '../../../domain/repository/RepositoryFactory';
-import Http from '../http/Http';
+import CreateEntry from '../../../../application/CreateEntry';
+import GetEntries from '../../../../application/GetEntries';
+import UpdateEntry from '../../../../application/UpdateEntry';
+import UserData from '../../../../domain/entity/UserData';
+import RepositoryFactory from '../../../../domain/repository/RepositoryFactory';
+import Http from '../../http/Http';
 
 export default class EntryController {
-	constructor(private repositoryFactory: RepositoryFactory) {}
+	constructor(private readonly repositoryFactory: RepositoryFactory) {}
 
 	list = async (userData: UserData, params: any) => {
 		let input = {
 			user: userData,
-			dashboard: userData.id,
+			dashboard: params['dashboard'],
 			month: params['month'],
 			year: params['year'],
 		};
@@ -19,34 +19,35 @@ export default class EntryController {
 		return output.entries;
 	};
 
-	save = async (userData: UserData, _: any, body: BodySave) => {
+	save = async (userData: UserData, params: any, body: BodySave) => {
 		let input = {
 			user: userData,
-			dashboard: userData.id,
+			dashboard: params['dashboard'],
 			...body,
 			date: new Date(body.date),
 		};
 		let output = await new CreateEntry(this.repositoryFactory).execute(input);
 		return {
-			output,
+			output: output,
 			status: 201,
 		};
 	};
 
 	update = async (userData: UserData, params: any, body: BodyUpdate) => {
+		let entryId = params['id'] as string;
 		let input = {
 			user: userData,
+			dashboard: params['dashboard'],
 			...body,
 			date: new Date(body.date),
 		};
-		let entryId = params['id'];
 		await new UpdateEntry(this.repositoryFactory).execute(entryId, input);
 	};
 
 	public bind(http: Http) {
-		http.on('get', '/entries', this.list);
-		http.on('post', '/entries', this.save);
-		http.on('put', '/entries/{id}', this.update);
+		http.on('get', '/dashboard/{dashboard}/entries', this.list);
+		http.on('post', '/dashboard/{dashboard}/entries', this.save);
+		http.on('put', '/dashboard/{dashboard}/entries/{id}', this.update);
 		//http.on('delete', '/entries/{id}', this.delete);
 	}
 }

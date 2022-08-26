@@ -39,8 +39,8 @@ export default class GetEntries {
 type Input = {
 	user: UserData;
 	dashboard: string;
+	year: number;
 	month?: number;
-	year?: number;
 };
 
 type Output = {
