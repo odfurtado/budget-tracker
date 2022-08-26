@@ -1,10 +1,10 @@
+import Category from '../../src/domain/entity/Category';
 import DashboardShare from '../../src/domain/entity/DashboardShare';
 import DashboardShareRepository from '../../src/domain/repository/DashboardShareRepository';
 import RepositoryFactory from '../../src/domain/repository/RepositoryFactory';
 
 export default class DashboardDataGenerator {
 	private readonly dashboardShareRepository: DashboardShareRepository;
-	private dashboardsShare: DashboardShare[] = [];
 
 	constructor(
 		private readonly dashboard: string,
@@ -16,7 +16,6 @@ export default class DashboardDataGenerator {
 
 	pendingShareWith(sharedWithEmail: string) {
 		let dashboardShare = new DashboardShare(this.dashboard, sharedWithEmail);
-		this.dashboardsShare.push(dashboardShare);
 		this.dashboardShareRepository.save(dashboardShare);
 		return dashboardShare.id;
 	}
@@ -30,7 +29,6 @@ export default class DashboardDataGenerator {
 			new Date(),
 			new Date()
 		);
-		this.dashboardsShare.push(dashboardShare);
 		this.dashboardShareRepository.save(dashboardShare);
 		return dashboardShare.id;
 	}
@@ -42,7 +40,6 @@ export default class DashboardDataGenerator {
 			undefined,
 			'Rejected'
 		);
-		this.dashboardsShare.push(dashboardShare);
 		this.dashboardShareRepository.save(dashboardShare);
 		return dashboardShare.id;
 	}
@@ -56,12 +53,13 @@ export default class DashboardDataGenerator {
 			new Date(),
 			new Date()
 		);
-		this.dashboardsShare.push(dashboardShare);
 		this.dashboardShareRepository.save(dashboardShare);
 		return dashboardShare.id;
 	}
 
-	getDashboardsShare() {
-		return this.dashboardsShare;
+	category(name: string) {
+		let category = new Category(this.dashboard, name);
+		this.repositoryFactory.createCategoryRepository().save(category);
+		return category.id;
 	}
 }

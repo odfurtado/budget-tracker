@@ -1,3 +1,4 @@
+import Category from '../../src/domain/entity/Category';
 import RepositoryFactory from '../../src/domain/repository/RepositoryFactory';
 import DashboardDataGenerator from './DashboardDataGenerator';
 
@@ -15,5 +16,11 @@ export default class DataGenerator {
 			);
 		}
 		return this.dashboards[dashboard];
+	}
+
+	systemCategory(name: string) {
+		let category = new Category(null, name);
+		this.repositoryFactory.createCategoryRepository().save(category);
+		return category.id;
 	}
 }
