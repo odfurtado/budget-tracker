@@ -6,7 +6,7 @@
 	"scripts": {
 		"start": "tsc && node dist/src/main",
 		"dev": "nodemon --watch 'src/' --exec 'ts-node src/main.ts' -e ts",
-		"test": "tsc && jest dist/test"
+		"test": "jest"
 	},
 	"keywords": [],
 	"author": "",
