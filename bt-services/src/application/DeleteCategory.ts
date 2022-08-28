@@ -26,7 +26,7 @@ export default class DeleteCategory {
 				input.dashboard,
 				input.user.id
 			);
-		category.checkIfCurrentUserCanDelete(input.user, currentDashboardShare);
+		category.delete(input.user, currentDashboardShare);
 		this.categoryRepository.delete(category.id);
 	}
 }

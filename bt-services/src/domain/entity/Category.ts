@@ -13,12 +13,9 @@ export default class Category {
 		this.id = id ? id : uuidv4();
 	}
 
-	checkIfCurrentUserCanDelete(
-		user: UserData,
-		dashboardShare: DashboardShare | null
-	) {
+	delete(user: UserData, dashboardShare: DashboardShare | null) {
 		if (!this.dashboard) {
-			throw new Error('Category could not be delete');
+			throw new Error('Category cannot be delete');
 		}
 
 		if (!Category.hasAccess(user, this.dashboard, dashboardShare)) {
