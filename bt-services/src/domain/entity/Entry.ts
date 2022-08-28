@@ -101,7 +101,7 @@ export default class Entry {
 
 	update(
 		user: UserData,
-		dashboardShare: DashboardShare | null,
+		dashboardShare: DashboardShare | undefined,
 		{ date, type, description, category, paymentType, amount }: UpdateData
 	) {
 		if (!Entry.hasAccess(user, this.dashboard, dashboardShare)) {
@@ -136,7 +136,7 @@ export default class Entry {
 		}
 	}
 
-	delete(user: UserData, dashboardShare: DashboardShare | null) {
+	delete(user: UserData, dashboardShare?: DashboardShare) {
 		if (!Entry.hasAccess(user, this.dashboard, dashboardShare)) {
 			throw new Error(
 				'The current user is not authorized to delete the data'
@@ -147,7 +147,7 @@ export default class Entry {
 	static hasAccess(
 		user: UserData,
 		dashboard: string,
-		dashboardShare: DashboardShare | null
+		dashboardShare?: DashboardShare
 	) {
 		let dashboardFromCurrentUser = dashboard === user.id;
 		let dashboardShareIsActive =
@@ -159,7 +159,7 @@ export default class Entry {
 	public static checkIfCurrentUserCanList(
 		user: UserData,
 		dashboard: string,
-		dashboardShare: DashboardShare | null
+		dashboardShare?: DashboardShare
 	) {
 		if (!Entry.hasAccess(user, dashboard, dashboardShare)) {
 			throw new Error('The current user is not authorized to list the data');
@@ -169,7 +169,7 @@ export default class Entry {
 	public static checkIfCurrentUserCanCreate(
 		user: UserData,
 		dashboard: string,
-		dashboardShare: DashboardShare | null
+		dashboardShare?: DashboardShare
 	) {
 		if (!Entry.hasAccess(user, dashboard, dashboardShare)) {
 			throw new Error('The current user is not authorized to create data');

@@ -38,14 +38,13 @@ export default class DashboardShareRepositoryMongoDB
 		}
 	}
 
-	async get(id: string): Promise<DashboardShare | null> {
+	async get(id: string): Promise<DashboardShare | undefined> {
 		let dashboardShareModel = await this.DashboardShareModel.findOne({
 			id,
 		});
 		if (dashboardShareModel) {
 			return this.mapModelToEntity(dashboardShareModel);
 		}
-		return null;
 	}
 
 	async getByUser(userId: string): Promise<DashboardShare[]> {
@@ -72,7 +71,7 @@ export default class DashboardShareRepositoryMongoDB
 	async getCurrent(
 		dashboard: string,
 		user: string
-	): Promise<DashboardShare | null> {
+	): Promise<DashboardShare | undefined> {
 		let currentDashboardShare = await this.DashboardShareModel.findOne({
 			dashboard,
 			sharedWithUserId: user,
@@ -81,7 +80,6 @@ export default class DashboardShareRepositoryMongoDB
 		if (currentDashboardShare) {
 			return this.mapModelToEntity(currentDashboardShare);
 		}
-		return null;
 	}
 
 	private mapModelToEntity(model: Model) {

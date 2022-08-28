@@ -13,7 +13,7 @@ export default class Category {
 		this.id = id ? id : uuidv4();
 	}
 
-	delete(user: UserData, dashboardShare: DashboardShare | null) {
+	delete(user: UserData, dashboardShare?: DashboardShare) {
 		if (!this.dashboard) {
 			throw new Error('Category cannot be delete');
 		}
@@ -26,7 +26,7 @@ export default class Category {
 	static hasAccess(
 		user: UserData,
 		dashboard: string,
-		dashboardShare: DashboardShare | null
+		dashboardShare?: DashboardShare
 	) {
 		let dashboardFromCurrentUser = dashboard === user.id;
 		let dashboardShareIsActive =
@@ -38,7 +38,7 @@ export default class Category {
 	public static checkIfCurrentUserCanList(
 		user: UserData,
 		dashboard: string,
-		dashboardShare: DashboardShare | null
+		dashboardShare?: DashboardShare
 	) {
 		if (!Category.hasAccess(user, dashboard, dashboardShare)) {
 			throw new Error('The current user is not authorized to list data');
@@ -48,7 +48,7 @@ export default class Category {
 	public static checkIfCurrentUserCanCreate(
 		user: UserData,
 		dashboard: string,
-		dashboardShare: DashboardShare | null
+		dashboardShare?: DashboardShare
 	) {
 		if (!Category.hasAccess(user, dashboard, dashboardShare)) {
 			throw new Error('The current user is not authorized to create data');

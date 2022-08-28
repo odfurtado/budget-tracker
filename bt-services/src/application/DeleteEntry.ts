@@ -23,7 +23,7 @@ export default class DeleteEntry {
 			input.dashboard,
 			input.user.id
 		);
-		entry?.delete(input.user, dashboardShare);
+		entry.delete(input.user, dashboardShare);
 		await this.entryRepository.delete(entry?.id as string);
 	}
 }

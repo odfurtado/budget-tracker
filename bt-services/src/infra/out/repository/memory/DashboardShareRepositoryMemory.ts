@@ -17,10 +17,10 @@ export default class DashboardShareRepositoryMemory
 		}
 	}
 
-	async get(id: string): Promise<DashboardShare | null> {
+	async get(id: string): Promise<DashboardShare | undefined> {
 		return this.dashboardShares.find(
 			(dashboardShare) => dashboardShare.id === id
-		) as DashboardShare;
+		);
 	}
 
 	async getByUser(userId: string): Promise<DashboardShare[]> {
@@ -44,7 +44,7 @@ export default class DashboardShareRepositoryMemory
 	async getCurrent(
 		dashboard: string,
 		user: string
-	): Promise<DashboardShare | null> {
+	): Promise<DashboardShare | undefined> {
 		let dashboardShareFound = this.dashboardShares.filter(
 			(dashboardShare) =>
 				dashboardShare.dashboard === dashboard &&
@@ -54,7 +54,6 @@ export default class DashboardShareRepositoryMemory
 		if (dashboardShareFound && dashboardShareFound.length !== 0) {
 			return dashboardShareFound[0];
 		}
-		return null;
 	}
 
 	//For test only
