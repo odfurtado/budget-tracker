@@ -29,6 +29,7 @@ describe('UseCase.UpdateEntry', () => {
 				name: '',
 				email: '',
 			},
+			id: entry.id,
 			date: new Date('2023-12-01'),
 			type: 'cost' as 'cost',
 			description: 'theather',
@@ -36,7 +37,7 @@ describe('UseCase.UpdateEntry', () => {
 			paymentType: 'credit_card',
 			amount: 1000,
 		};
-		await new UpdateEntry(repositoryFactory).execute(entry.id, input);
+		await new UpdateEntry(repositoryFactory).execute(input);
 		let entrySaved = (await entryRepository.get(entry.id)) as Entry;
 		expect(entrySaved).not.toBeNull();
 		expect(entrySaved.month).toBe(input.date.getUTCMonth() + 1);
@@ -77,6 +78,7 @@ describe('UseCase.UpdateEntry', () => {
 				name: '',
 				email: '',
 			},
+			id: entry.id,
 			date: new Date('2023-12-01'),
 			type: 'cost' as 'cost',
 			description: 'theather',
@@ -84,7 +86,7 @@ describe('UseCase.UpdateEntry', () => {
 			paymentType: 'credit_card',
 			amount: 1000,
 		};
-		await new UpdateEntry(repositoryFactory).execute(entry.id, input);
+		await new UpdateEntry(repositoryFactory).execute(input);
 		let entrySaved = (await entryRepository.get(entry.id)) as Entry;
 		expect(entrySaved).not.toBeNull();
 		expect(entrySaved.month).toBe(input.date.getUTCMonth() + 1);
@@ -114,6 +116,7 @@ describe('UseCase.UpdateEntry', () => {
 				name: '',
 				email: '',
 			},
+			id: entry.id,
 			date: new Date('2023-12-01'),
 			type: 'cost' as 'cost',
 			description: 'theather',
@@ -122,7 +125,7 @@ describe('UseCase.UpdateEntry', () => {
 			amount: 1000,
 		};
 		await expect(
-			new UpdateEntry(repositoryFactory).execute(entry.id, input)
+			new UpdateEntry(repositoryFactory).execute(input)
 		).rejects.toThrow(
 			'The current user is not authorized to change the data'
 		);
@@ -155,15 +158,10 @@ describe('UseCase.UpdateEntry', () => {
 				name: '',
 				email: '',
 			},
-			date: new Date('2023-12-01'),
-			type: 'cost' as 'cost',
-			description: 'theather',
-			category: 'fun',
-			paymentType: 'credit_card',
-			amount: 1000,
+			id: 'invalidentryid',
 		};
 		await expect(
-			new UpdateEntry(repositoryFactory).execute('invalidentryid', input)
+			new UpdateEntry(repositoryFactory).execute(input)
 		).rejects.toThrow('Entry not found');
 	});
 });

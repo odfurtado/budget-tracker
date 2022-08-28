@@ -150,4 +150,33 @@ describe('Controller.Dashboard.Entry', () => {
 		expect(entry.paymentType).toBe(body.paymentType);
 		expect(entry.amount).toBe(body.amount);
 	});
+
+	test('Should delete entry related to dashboard', async () => {
+		let entryId = given
+			.dashboard('userId-1111')
+			.entry(
+				new Date('2022-08-25'),
+				'cost',
+				'aniversary',
+				'fun',
+				'credit card',
+				200
+			);
+		let userData = {
+			id: 'userId-1111',
+			name: 'User 01',
+			email: 'user01@mail.com',
+		};
+		let params = {
+			dashboard: 'userId-1111',
+			id: entryId,
+		};
+		await expect(
+			new EntryController(repositoryFactory).delete(userData, params)
+		).resolves.toBeUndefined();
+		let entry = (await repositoryFactory
+			.createEntryRepository()
+			.get(entryId)) as Entry;
+		expect(entry).toBeUndefined();
+	});
 });

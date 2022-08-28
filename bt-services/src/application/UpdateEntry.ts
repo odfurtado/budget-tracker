@@ -13,8 +13,8 @@ export default class UpdateEntry {
 			repositoryFactory.createDashboardShareRepository();
 	}
 
-	async execute(id: string, input: Input): Promise<void> {
-		var entry = await this.entryRepository.get(id);
+	async execute(input: Input): Promise<void> {
+		var entry = await this.entryRepository.get(input.id);
 		if (!entry) {
 			throw new Error('Entry not found!');
 		}
@@ -22,17 +22,25 @@ export default class UpdateEntry {
 			entry.dashboard,
 			input.user.id
 		);
-		entry.update(input.user, dashboardShare, input);
+		entry.update(input.user, dashboardShare, {
+			date: input.date,
+			type: input.type,
+			description: input.description,
+			category: input.category,
+			paymentType: input.paymentType,
+			amount: input.amount,
+		});
 		await this.entryRepository.save(entry);
 	}
 }
 
 type Input = {
 	user: UserData;
-	date: Date;
-	type: 'cost' | 'income';
-	description: string;
-	category: string;
-	paymentType: string;
-	amount: number;
+	id: string;
+	date?: Date;
+	type?: 'cost' | 'income';
+	description?: string;
+	category?: string;
+	paymentType?: string;
+	amount?: number;
 };

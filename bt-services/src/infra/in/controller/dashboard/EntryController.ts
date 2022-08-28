@@ -1,4 +1,5 @@
 import CreateEntry from '../../../../application/CreateEntry';
+import DeleteEntry from '../../../../application/DeleteEntry';
 import GetEntries from '../../../../application/GetEntries';
 import UpdateEntry from '../../../../application/UpdateEntry';
 import UserData from '../../../../domain/entity/UserData';
@@ -35,20 +36,33 @@ export default class EntryController {
 
 	update = async (userData: UserData, params: any, body: BodyUpdate) => {
 		let entryId = params['id'] as string;
+		let dashboard = params['dashboard'] as string;
 		let input = {
 			user: userData,
-			dashboard: params['dashboard'],
+			dashboard,
 			...body,
 			date: new Date(body.date),
+			id: entryId,
 		};
-		await new UpdateEntry(this.repositoryFactory).execute(entryId, input);
+		await new UpdateEntry(this.repositoryFactory).execute(input);
+	};
+
+	delete = async (userData: UserData, params: any) => {
+		let entryId = params['id'] as string;
+		let dashboard = params['dashboard'] as string;
+		let input = {
+			user: userData,
+			dashboard,
+			entry: entryId,
+		};
+		await new DeleteEntry(this.repositoryFactory).execute(input);
 	};
 
 	public bind(http: Http) {
 		http.on('get', '/dashboard/{dashboard}/entries', this.list);
 		http.on('post', '/dashboard/{dashboard}/entries', this.save);
 		http.on('put', '/dashboard/{dashboard}/entries/{id}', this.update);
-		//http.on('delete', '/entries/{id}', this.delete);
+		http.on('delete', '/dashboard/{dashboard}/entries/{id}', this.delete);
 	}
 }
 
