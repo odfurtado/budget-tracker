@@ -136,6 +136,14 @@ export default class Entry {
 		}
 	}
 
+	delete(user: UserData, dashboardShare: DashboardShare | null) {
+		if (!Entry.hasAccess(user, this.dashboard, dashboardShare)) {
+			throw new Error(
+				'The current user is not authorized to delete the data'
+			);
+		}
+	}
+
 	static hasAccess(
 		user: UserData,
 		dashboard: string,
