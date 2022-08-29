@@ -140,7 +140,7 @@ describe('Controller.Dashboard.Entry', () => {
 		).resolves.toBeUndefined();
 		let entry = (await repositoryFactory
 			.createEntryRepository()
-			.get(entryId)) as Entry;
+			.get(entryId, params.dashboard)) as Entry;
 		expect(entry).not.toBeNull();
 		expect(entry.id).toBe(entryId);
 		expect(entry.date).toStrictEqual(new Date(body.date));
@@ -176,7 +176,7 @@ describe('Controller.Dashboard.Entry', () => {
 		).resolves.toBeUndefined();
 		let entry = (await repositoryFactory
 			.createEntryRepository()
-			.get(entryId)) as Entry;
+			.get(entryId, params.dashboard)) as Entry;
 		expect(entry).toBeUndefined();
 	});
 });

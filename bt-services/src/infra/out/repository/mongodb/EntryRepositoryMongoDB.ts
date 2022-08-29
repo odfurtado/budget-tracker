@@ -40,8 +40,8 @@ export default class EntryRepositoryMongoDB implements EntryRepository {
 		}
 	}
 
-	async get(id: string): Promise<Entry | undefined> {
-		let entryModel = await this.EntryModel.findOne({ id });
+	async get(id: string, dashboard: string): Promise<Entry | undefined> {
+		let entryModel = await this.EntryModel.findOne({ id, dashboard });
 		if (!entryModel) {
 			return undefined;
 		}

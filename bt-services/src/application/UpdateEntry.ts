@@ -1,28 +1,27 @@
 import UserData from '../domain/entity/UserData';
-import DashboardShareRepository from '../domain/repository/DashboardShareRepository';
+import EntityNotFound from '../domain/exception/EntityNotFound';
 import EntryRepository from '../domain/repository/EntryRepository';
 import RepositoryFactory from '../domain/repository/RepositoryFactory';
+import AccessManagement from '../domain/service/AccessManagement';
 
 export default class UpdateEntry {
 	private entryRepository: EntryRepository;
-	private dashboardShareRepository: DashboardShareRepository;
 
 	constructor(readonly repositoryFactory: RepositoryFactory) {
 		this.entryRepository = repositoryFactory.createEntryRepository();
-		this.dashboardShareRepository =
-			repositoryFactory.createDashboardShareRepository();
 	}
 
 	async execute(input: Input): Promise<void> {
-		var entry = await this.entryRepository.get(input.id);
-		if (!entry) {
-			throw new Error('Entry not found!');
-		}
-		let dashboardShare = await this.dashboardShareRepository.getCurrent(
-			entry.dashboard,
-			input.user.id
+		await AccessManagement.checkAccess(
+			this.repositoryFactory,
+			input.user,
+			input.dashboard
 		);
-		entry.update(input.user, dashboardShare, {
+		var entry = await this.entryRepository.get(input.id, input.dashboard);
+		if (!entry) {
+			throw new EntityNotFound('Entry');
+		}
+		entry.update({
 			date: input.date,
 			type: input.type,
 			description: input.description,
@@ -36,6 +35,7 @@ export default class UpdateEntry {
 
 type Input = {
 	user: UserData;
+	dashboard: string;
 	id: string;
 	date?: Date;
 	type?: 'cost' | 'income';

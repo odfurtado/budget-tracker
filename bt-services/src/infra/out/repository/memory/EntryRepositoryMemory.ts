@@ -13,8 +13,10 @@ export default class EntryRepositoryMemory implements EntryRepository {
 		}
 	}
 
-	async get(id: string): Promise<Entry | undefined> {
-		return this.entries.find((entry) => entry.id === id);
+	async get(id: string, dashboard: string): Promise<Entry | undefined> {
+		return this.entries.find(
+			(entry) => entry.id === id && entry.dashboard === dashboard
+		);
 	}
 
 	async list(

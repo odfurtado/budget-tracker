@@ -27,7 +27,7 @@ describe.skip('Repository.MongoDB.EntryRepository', () => {
 		);
 		await entryRepository.save(entry);
 
-		let entrySaved = await entryRepository.get(entry.id);
+		let entrySaved = await entryRepository.get(entry.id, dashboard);
 		expect(entrySaved?.id).toBe(entry.id);
 		expect(entrySaved?.date).toStrictEqual(entry.date);
 		expect(entrySaved?.type).toBe(entry.type);
@@ -48,8 +48,6 @@ describe.skip('Repository.MongoDB.EntryRepository', () => {
 			543.07
 		);
 		await entryRepository.save(entry);
-		let userData = { id: dashboard, name: '', email: '' };
-		let dashboardShare = null;
 		let updateData = {
 			date: new Date('2022-09-05'),
 			type: 'cost' as 'cost',
@@ -58,9 +56,9 @@ describe.skip('Repository.MongoDB.EntryRepository', () => {
 			paymentType: 'PIX',
 			amount: 514.07,
 		};
-		entry.update(userData, dashboardShare, updateData);
+		entry.update(updateData);
 		await entryRepository.save(entry);
-		let entrySaved = await entryRepository.get(entry.id);
+		let entrySaved = await entryRepository.get(entry.id, dashboard);
 		expect(entrySaved?.id).toBe(entry.id);
 		expect(entrySaved?.date).toStrictEqual(entry.date);
 		expect(entrySaved?.type).toBe(entry.type);
@@ -119,7 +117,7 @@ describe.skip('Repository.MongoDB.EntryRepository', () => {
 		);
 		await entryRepository.save(entry);
 		await entryRepository.delete(entry.id);
-		let entrySaved = await entryRepository.get(entry.id);
+		let entrySaved = await entryRepository.get(entry.id, dashboard);
 		expect(entrySaved).toBeUndefined();
 	});
 

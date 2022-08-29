@@ -18,6 +18,7 @@ export default class DashboardShareRepositoryMemory
 	}
 
 	async get(id: string): Promise<DashboardShare | undefined> {
+		//throw new Error('AAAAAAA');
 		return this.dashboardShares.find(
 			(dashboardShare) => dashboardShare.id === id
 		);

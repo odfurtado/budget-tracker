@@ -27,7 +27,7 @@ describe('Entity.Category', () => {
 		};
 		let dashboard = 'userId-1111';
 		expect(
-			Category.checkIfCurrentUserCanCreate(userData, dashboard, null)
+			Category.checkIfCurrentUserCanCreate(userData, dashboard)
 		).toBeUndefined();
 	});
 
@@ -61,7 +61,7 @@ describe('Entity.Category', () => {
 		};
 		let dashboard = 'userId-1111';
 		expect(() =>
-			Category.checkIfCurrentUserCanCreate(userData, dashboard, null)
+			Category.checkIfCurrentUserCanCreate(userData, dashboard)
 		).toThrow('The current user is not authorized to create data');
 	});
 
@@ -73,7 +73,7 @@ describe('Entity.Category', () => {
 		};
 		let dashboard = 'userId-1111';
 		expect(
-			Category.checkIfCurrentUserCanList(userData, dashboard, null)
+			Category.checkIfCurrentUserCanList(userData, dashboard)
 		).toBeUndefined();
 	});
 
@@ -103,7 +103,7 @@ describe('Entity.Category', () => {
 		};
 		let dashboard = 'userId-1111';
 		expect(() =>
-			Category.checkIfCurrentUserCanList(userData, dashboard, null)
+			Category.checkIfCurrentUserCanList(userData, dashboard)
 		).toThrow('The current user is not authorized to list data');
 	});
 
@@ -115,7 +115,7 @@ describe('Entity.Category', () => {
 		};
 		let dashboard = 'userId-1111';
 		let category = new Category(dashboard, 'category 01');
-		expect(category.delete(userData, null)).toBeUndefined();
+		expect(category.delete(userData)).toBeUndefined();
 	});
 
 	test('Should delete a category from dashboard shared with other user', () => {
@@ -143,7 +143,7 @@ describe('Entity.Category', () => {
 		};
 		let dashboard = 'userId-1111';
 		let category = new Category(dashboard, 'category 01');
-		expect(() => category.delete(userData, null)).toThrow(
+		expect(() => category.delete(userData)).toThrow(
 			'The current user is not authorized to delete data'
 		);
 	});
@@ -155,7 +155,7 @@ describe('Entity.Category', () => {
 			email: 'user01@mail.com',
 		};
 		let category = new Category(null, 'category 01');
-		expect(() => category.delete(userData, null)).toThrow(
+		expect(() => category.delete(userData)).toThrow(
 			'Category cannot be delete'
 		);
 	});

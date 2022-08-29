@@ -1,16 +1,18 @@
 import CreateEntry from '../../../src/application/CreateEntry';
-import DashboardShare from '../../../src/domain/entity/DashboardShare';
 import RepositoryFactory from '../../../src/domain/repository/RepositoryFactory';
 import MemoryRepositoryFactory from '../../../src/infra/out/repository/memory/MemoryRepositoryFactory';
+import DataGenerator from '../../dataGenerator/DataGenerator';
 
 describe('UseCase.CreateEntry', () => {
 	let repositoryFactory: RepositoryFactory;
+	let given: DataGenerator;
 
 	beforeEach(async function () {
 		repositoryFactory = new MemoryRepositoryFactory();
+		given = new DataGenerator(repositoryFactory);
 	});
 
-	test('Should create an entry - 3 installments', async () => {
+	test('Should create an entry with 3 installments', async () => {
 		let input = {
 			user: {
 				id: 'idUser-1111',
@@ -46,7 +48,7 @@ describe('UseCase.CreateEntry', () => {
 		expect(entries[2].amount).toBe(input.amount / input.installments);
 	});
 
-	test('Should create an entry - 1 installments', async () => {
+	test('Should create an entry with 1 installment', async () => {
 		let input = {
 			user: {
 				id: 'idUser-1111',
@@ -76,7 +78,7 @@ describe('UseCase.CreateEntry', () => {
 		expect(entries[0].amount).toBe(input.amount);
 	});
 
-	test('Should create an entry in other dashboard that is shared', async () => {
+	test('Should create an entry to dashboard shared with other user', async () => {
 		let input = {
 			user: {
 				id: 'idUser-2222',
@@ -92,18 +94,9 @@ describe('UseCase.CreateEntry', () => {
 			amount: 87.36,
 			installments: 1,
 		};
-		let dashboardShareRepository =
-			repositoryFactory.createDashboardShareRepository();
-		dashboardShareRepository.save(
-			new DashboardShare(
-				input.dashboard,
-				input.user.email,
-				input.user.id,
-				'Approved',
-				new Date(),
-				new Date()
-			)
-		);
+		given
+			.dashboard(input.dashboard)
+			.approvedShareWith(input.user.email, input.user.id);
 		let output = await new CreateEntry(repositoryFactory).execute(input);
 		expect(output.ids).toHaveLength(1);
 		let entries = await repositoryFactory
@@ -118,7 +111,7 @@ describe('UseCase.CreateEntry', () => {
 		expect(entries[0].amount).toBe(input.amount);
 	});
 
-	test('Cannot create an entry in other dashboard that is not shared', async () => {
+	test('Cannot create an entry to dashboard that is not shared', async () => {
 		let createEntry = new CreateEntry(repositoryFactory);
 		let input = {
 			user: {
@@ -136,7 +129,7 @@ describe('UseCase.CreateEntry', () => {
 			installments: 1,
 		};
 		await expect(createEntry.execute(input)).rejects.toThrow(
-			'The current user is not authorized to create data'
+			'Invalid access'
 		);
 	});
 });

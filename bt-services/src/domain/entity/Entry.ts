@@ -1,7 +1,5 @@
-import { v4 as uuidv4 } from 'uuid';
 import addMonths from 'date-fns/addMonths';
-import DashboardShare from './DashboardShare';
-import UserData from './UserData';
+import { v4 as uuidv4 } from 'uuid';
 
 export default class Entry {
 	readonly id: string;
@@ -99,16 +97,14 @@ export default class Entry {
 		return this._amount;
 	}
 
-	update(
-		user: UserData,
-		dashboardShare: DashboardShare | undefined,
-		{ date, type, description, category, paymentType, amount }: UpdateData
-	) {
-		if (!Entry.hasAccess(user, this.dashboard, dashboardShare)) {
-			throw new Error(
-				'The current user is not authorized to change the data'
-			);
-		}
+	update({
+		date,
+		type,
+		description,
+		category,
+		paymentType,
+		amount,
+	}: UpdateData) {
 		if (date) {
 			this._date = date;
 			this._month = date.getUTCMonth() + 1;
@@ -133,46 +129,6 @@ export default class Entry {
 
 		if (amount) {
 			this._amount = amount;
-		}
-	}
-
-	delete(user: UserData, dashboardShare?: DashboardShare) {
-		if (!Entry.hasAccess(user, this.dashboard, dashboardShare)) {
-			throw new Error(
-				'The current user is not authorized to delete the data'
-			);
-		}
-	}
-
-	static hasAccess(
-		user: UserData,
-		dashboard: string,
-		dashboardShare?: DashboardShare
-	) {
-		let dashboardFromCurrentUser = dashboard === user.id;
-		let dashboardShareIsActive =
-			dashboardShare && dashboardShare.isActive(dashboard, user.id);
-
-		return dashboardFromCurrentUser || dashboardShareIsActive;
-	}
-
-	public static checkIfCurrentUserCanList(
-		user: UserData,
-		dashboard: string,
-		dashboardShare?: DashboardShare
-	) {
-		if (!Entry.hasAccess(user, dashboard, dashboardShare)) {
-			throw new Error('The current user is not authorized to list the data');
-		}
-	}
-
-	public static checkIfCurrentUserCanCreate(
-		user: UserData,
-		dashboard: string,
-		dashboardShare?: DashboardShare
-	) {
-		if (!Entry.hasAccess(user, dashboard, dashboardShare)) {
-			throw new Error('The current user is not authorized to create data');
 		}
 	}
 }

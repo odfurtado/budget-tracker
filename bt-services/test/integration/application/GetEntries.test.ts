@@ -1,18 +1,28 @@
 import GetEntries from '../../../src/application/GetEntries';
-import DashboardShare from '../../../src/domain/entity/DashboardShare';
-import Entry from '../../../src/domain/entity/Entry';
 import RepositoryFactory from '../../../src/domain/repository/RepositoryFactory';
 import MemoryRepositoryFactory from '../../../src/infra/out/repository/memory/MemoryRepositoryFactory';
+import DataGenerator from '../../dataGenerator/DataGenerator';
 
 describe('UseCase.GetEntries', () => {
 	let repositoryFactory: RepositoryFactory;
+	let given: DataGenerator;
 
 	beforeEach(() => {
 		repositoryFactory = new MemoryRepositoryFactory();
+		given = new DataGenerator(repositoryFactory);
 	});
 
-	test('Should return the entries within year and month', async () => {
-		let entryRepository = repositoryFactory.createEntryRepository();
+	test('Should return the entries from dashboard', async () => {
+		given
+			.dashboard('userId-1111')
+			.entry(
+				new Date('2022-11-01'),
+				'income',
+				'salary',
+				'salary',
+				'transfer',
+				7000
+			);
 		let input = {
 			user: {
 				id: 'userId-1111',
@@ -23,17 +33,6 @@ describe('UseCase.GetEntries', () => {
 			month: 11,
 			year: 2022,
 		};
-		entryRepository.save(
-			new Entry(
-				input.dashboard,
-				new Date('2022-11-01'),
-				'income',
-				'salary',
-				'salary',
-				'transfer',
-				7000
-			)
-		);
 		let output = await new GetEntries(repositoryFactory).execute(input);
 		let entries = output.entries;
 		expect(entries).toHaveLength(1);
@@ -43,8 +42,20 @@ describe('UseCase.GetEntries', () => {
 		expect(entries[0].amount).toBe(7000);
 	});
 
-	test('Should return the entries from other user that dashboard is shared with', async () => {
-		let entryRepository = repositoryFactory.createEntryRepository();
+	test('Should return the entries from dashboard shared', async () => {
+		given
+			.dashboard('userId-1111')
+			.entry(
+				new Date('2022-11-01'),
+				'income',
+				'salary',
+				'salary',
+				'transfer',
+				7000
+			);
+		given
+			.dashboard('userId-1111')
+			.approvedShareWith('user02@mail.com', 'userId-2222');
 		let input = {
 			user: {
 				id: 'userId-2222',
@@ -55,29 +66,6 @@ describe('UseCase.GetEntries', () => {
 			month: 11,
 			year: 2022,
 		};
-		entryRepository.save(
-			new Entry(
-				input.dashboard,
-				new Date('2022-11-01'),
-				'income',
-				'salary',
-				'salary',
-				'transfer',
-				7000
-			)
-		);
-		let dashboardShareRepository =
-			repositoryFactory.createDashboardShareRepository();
-		dashboardShareRepository.save(
-			new DashboardShare(
-				input.dashboard,
-				'otheruser@mail.com',
-				input.user.id,
-				'Approved',
-				new Date(),
-				new Date()
-			)
-		);
 		let output = await new GetEntries(repositoryFactory).execute(input);
 		let entries = output.entries;
 		expect(entries).toHaveLength(1);
@@ -88,8 +76,17 @@ describe('UseCase.GetEntries', () => {
 		expect(entries[0].amount).toBe(7000);
 	});
 
-	test('Cannot return the entries from other user', async () => {
-		let entryRepository = repositoryFactory.createEntryRepository();
+	test('Cannot return the entries from dashboard that is not shared', async () => {
+		given
+			.dashboard('userId-1111')
+			.entry(
+				new Date('2022-11-01'),
+				'income',
+				'salary',
+				'salary',
+				'transfer',
+				7000
+			);
 		let input = {
 			user: {
 				id: 'userId-2222',
@@ -100,19 +97,8 @@ describe('UseCase.GetEntries', () => {
 			month: 11,
 			year: 2022,
 		};
-		entryRepository.save(
-			new Entry(
-				input.dashboard,
-				new Date('2022-11-01'),
-				'income',
-				'salary',
-				'salary',
-				'transfer',
-				7000
-			)
-		);
 		await expect(
 			new GetEntries(repositoryFactory).execute(input)
-		).rejects.toThrow('The current user is not authorized to list the data');
+		).rejects.toThrow('Invalid access');
 	});
 });
