@@ -1,29 +1,21 @@
 import Category from '../domain/entity/Category';
 import UserData from '../domain/entity/UserData';
 import CategoryRepository from '../domain/repository/CategoryRepository';
-import DashboardShareRepository from '../domain/repository/DashboardShareRepository';
 import RepositoryFactory from '../domain/repository/RepositoryFactory';
+import AccessManagement from '../domain/service/AccessManagement';
 
 export default class CreateCategory {
 	private categoryRepository: CategoryRepository;
-	private dashboardShareRepository: DashboardShareRepository;
 
-	constructor(repositoryFactory: RepositoryFactory) {
+	constructor(private readonly repositoryFactory: RepositoryFactory) {
 		this.categoryRepository = repositoryFactory.createCategoryRepository();
-		this.dashboardShareRepository =
-			repositoryFactory.createDashboardShareRepository();
 	}
 
 	async execute(input: Input): Promise<Output> {
-		let currentDashboardShare =
-			await this.dashboardShareRepository.getCurrent(
-				input.dashboard,
-				input.user.id
-			);
-		Category.checkIfCurrentUserCanCreate(
+		await AccessManagement.checkAccess(
+			this.repositoryFactory,
 			input.user,
-			input.dashboard,
-			currentDashboardShare
+			input.dashboard
 		);
 		let category = new Category(input.dashboard, input.name);
 		await this.categoryRepository.save(category);

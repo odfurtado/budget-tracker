@@ -1,32 +1,29 @@
 import UserData from '../domain/entity/UserData';
+import EntityNotFound from '../domain/exception/EntityNotFound';
 import CategoryRepository from '../domain/repository/CategoryRepository';
-import DashboardShareRepository from '../domain/repository/DashboardShareRepository';
 import RepositoryFactory from '../domain/repository/RepositoryFactory';
+import AccessManagement from '../domain/service/AccessManagement';
 
 export default class DeleteCategory {
 	private categoryRepository: CategoryRepository;
-	private dashboardShareRepository: DashboardShareRepository;
 
-	constructor(repositoryFactory: RepositoryFactory) {
+	constructor(private readonly repositoryFactory: RepositoryFactory) {
 		this.categoryRepository = repositoryFactory.createCategoryRepository();
-		this.dashboardShareRepository =
-			repositoryFactory.createDashboardShareRepository();
 	}
 
 	async execute(input: Input): Promise<void> {
+		await AccessManagement.checkAccess(
+			this.repositoryFactory,
+			input.user,
+			input.dashboard
+		);
 		let category = await this.categoryRepository.get(
 			input.dashboard,
 			input.category
 		);
 		if (!category) {
-			throw new Error('Category not found');
+			throw new EntityNotFound('Category');
 		}
-		let currentDashboardShare =
-			await this.dashboardShareRepository.getCurrent(
-				input.dashboard,
-				input.user.id
-			);
-		category.delete(input.user, currentDashboardShare);
 		this.categoryRepository.delete(category.id);
 	}
 }
