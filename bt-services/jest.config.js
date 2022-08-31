@@ -3,6 +3,7 @@ module.exports = {
 	preset: 'ts-jest',
 	testEnvironment: 'node',
 	setupFiles: ['./test/config/setup.ts'],
+	verbose: true,
 	globals: {
 		'ts-jest': {
 			isolatedModules: true,
