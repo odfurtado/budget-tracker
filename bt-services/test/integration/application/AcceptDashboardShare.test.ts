@@ -3,7 +3,7 @@ import DashboardShare from '../../../src/domain/entity/DashboardShare';
 import MemoryRepositoryFactory from '../../../src/infra/out/repository/memory/MemoryRepositoryFactory';
 
 describe('UseCase.AcceptDashboardShare', () => {
-	test('Should approve a dashboard share', async () => {
+	test('Should accept a dashboard share', async () => {
 		let repositoryFactory = new MemoryRepositoryFactory();
 		let dashboardShareRepository =
 			repositoryFactory.createDashboardShareRepository();
@@ -133,6 +133,6 @@ describe('UseCase.AcceptDashboardShare', () => {
 		};
 		await expect(
 			new AcceptDashboardShare(repositoryFactory).execute(input)
-		).rejects.toThrow('Dashboard share not authorized for user');
+		).rejects.toThrow('Invalid access');
 	});
 });

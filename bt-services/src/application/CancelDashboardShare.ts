@@ -1,9 +1,11 @@
 import UserData from '../domain/entity/UserData';
+import EntityNotFound from '../domain/exception/EntityNotFound';
 import DashboardShareRepository from '../domain/repository/DashboardShareRepository';
 import RepositoryFactory from '../domain/repository/RepositoryFactory';
 
 export default class CancelDashboardShare {
 	private readonly dashboardShareRepository: DashboardShareRepository;
+
 	constructor(repositoryFactory: RepositoryFactory) {
 		this.dashboardShareRepository =
 			repositoryFactory.createDashboardShareRepository();
@@ -14,9 +16,9 @@ export default class CancelDashboardShare {
 			input.dashboardShare
 		);
 		if (!dashboardShare) {
-			throw new Error('Dashboard share not found or not authorized');
+			throw new EntityNotFound('Dashboard Share');
 		}
-		dashboardShare.cancelBy(input.dashboard, input.user.email);
+		dashboardShare.cancelBy(input.dashboard, input.user);
 		await this.dashboardShareRepository.save(dashboardShare);
 	}
 }

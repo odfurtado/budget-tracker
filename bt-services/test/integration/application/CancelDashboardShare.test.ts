@@ -77,6 +77,6 @@ describe('UseCase.CancelDashboardShare', () => {
 		};
 		await expect(
 			new CancelDashboardShare(repositoryFactory).execute(input)
-		).rejects.toThrow('Dashboard share not authorized for user');
+		).rejects.toThrow('Invalid access');
 	});
 });

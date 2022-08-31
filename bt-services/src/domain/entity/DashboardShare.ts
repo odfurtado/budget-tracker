@@ -1,4 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
+import InvalidAccess from '../exception/InvalidAccess';
+import UserData from './UserData';
 
 export default class DashboardShare {
 	readonly id: string;
@@ -23,12 +25,12 @@ export default class DashboardShare {
 		this._approvedAt = approvedAt ? approvedAt : null;
 	}
 
-	acceptBy(dashboard: string, userId: string, userEmail: string) {
+	acceptBy(dashboard: string, user: UserData) {
 		if (dashboard !== this.dashboard) {
-			throw new Error('Dashboard share not authorized for user');
+			throw new InvalidAccess();
 		}
-		if (this.sharedWithEmail !== userEmail) {
-			throw new Error('Dashboard share not authorized for user');
+		if (this.sharedWithEmail !== user.email) {
+			throw new InvalidAccess();
 		}
 		if (this.status !== 'PendingApproval') {
 			throw new Error(
@@ -36,16 +38,16 @@ export default class DashboardShare {
 			);
 		}
 		this._approvedAt = new Date();
-		this._sharedWithUserId = userId;
+		this._sharedWithUserId = user.id;
 		this._status = 'Approved';
 	}
 
-	cancelBy(dashboard: string, userEmail: string) {
+	cancelBy(dashboard: string, user: UserData) {
 		if (dashboard !== this.dashboard) {
-			throw new Error('Dashboard share not authorized for user');
+			throw new InvalidAccess();
 		}
-		if (this.sharedWithEmail !== userEmail) {
-			throw new Error('Dashboard share not authorized for user');
+		if (this.sharedWithEmail !== user.email) {
+			throw new InvalidAccess();
 		}
 		if (this.status === 'PendingApproval') {
 			this._status = 'Rejected';
@@ -72,6 +74,12 @@ export default class DashboardShare {
 			this.sharedWithUserId === userId &&
 			this.status === 'Approved'
 		);
+	}
+
+	static canBeShared(user: UserData, dashboard: string) {
+		if (user.id !== dashboard) {
+			throw new InvalidAccess();
+		}
 	}
 }
 

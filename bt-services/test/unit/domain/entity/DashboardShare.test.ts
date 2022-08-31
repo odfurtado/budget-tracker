@@ -1,3 +1,4 @@
+import { da } from 'date-fns/locale';
 import DashboardShare from '../../../../src/domain/entity/DashboardShare';
 
 describe('Entity.DashboardShare', () => {
@@ -16,97 +17,128 @@ describe('Entity.DashboardShare', () => {
 
 	test('Approve a dashboard share', () => {
 		let dashboard = 'userId-1111';
-		let email = 'validuser@mail.com';
-		let dashboardShare = new DashboardShare(dashboard, email);
-		let userId = 'userId-2222';
-		dashboardShare.acceptBy(dashboard, userId, email);
+		let sharedWithEmail = 'user02@mail.com';
+		let dashboardShare = new DashboardShare(dashboard, sharedWithEmail);
+		let user = {
+			id: 'userId-2222',
+			name: 'User 02',
+			email: sharedWithEmail,
+		};
+		dashboardShare.acceptBy(dashboard, user);
 		expect(dashboardShare.id).not.toBeNull();
 		expect(dashboardShare.dashboard).toBe(dashboard);
 		expect(dashboardShare.status).toBe('Approved');
-		expect(dashboardShare.sharedWithEmail).toBe(email);
-		expect(dashboardShare.sharedWithUserId).toBe(userId);
+		expect(dashboardShare.sharedWithEmail).toBe(user.email);
+		expect(dashboardShare.sharedWithUserId).toBe(user.id);
 		expect(dashboardShare.createdAt).not.toBeNull();
 		expect(dashboardShare.approvedAt).not.toBeNull();
 	});
 
 	test('Cannot aprove a dashboard share with a status != PendingApproval', () => {
 		let dashboard = 'userId-1111';
-		let email = 'validuser@mail.com';
+		let user = {
+			id: 'userId-2222',
+			name: 'User 02',
+			email: 'user02@mail.com',
+		};
 		let dashboardShare = new DashboardShare(
 			dashboard,
-			email,
-			'userId-2222',
+			user.email,
+			user.id,
 			'Approved',
 			new Date(),
 			new Date()
 		);
-		let userId = 'userId-2222';
-		expect(() =>
-			dashboardShare.acceptBy(dashboard, userId, email)
-		).toThrowError(
+		expect(() => dashboardShare.acceptBy(dashboard, user)).toThrowError(
 			'Cannot accept a dashboard share with status != PendingApproval'
 		);
 	});
 
 	test('Cannot aprove a dashboard share from other user', () => {
 		let dashboard = 'userId-1111';
-		let email = 'validuser@mail.com';
-		let dashboardShare = new DashboardShare(
-			dashboard,
-			email,
-			'userId-2222',
-			'Approved',
-			new Date(),
-			new Date()
+		let dashboardShare = new DashboardShare(dashboard, 'user02@mail.com');
+		let otherUser = {
+			id: 'userId-3333',
+			name: 'User 03',
+			email: 'user03@mail.com',
+		};
+		expect(() => dashboardShare.acceptBy(dashboard, otherUser)).toThrowError(
+			'Invalid access'
 		);
-		let userId = 'userId-2222';
-		expect(() =>
-			dashboardShare.acceptBy(dashboard, userId, 'invaliduser@email.com')
-		).toThrowError('Dashboard share not authorized for user');
 	});
 
 	test('Cancel a dashboard share with status == PendingApproval', () => {
 		let dashboard = 'userId-1111';
-		let email = 'validuser@mail.com';
-		let dashboardShare = new DashboardShare(dashboard, email);
-		dashboardShare.cancelBy(dashboard, 'validuser@mail.com');
+		let sharedWithEmail = 'user02@mail.com';
+		let dashboardShare = new DashboardShare(dashboard, sharedWithEmail);
+		let user = {
+			id: 'userId-2222',
+			name: 'User 02',
+			email: sharedWithEmail,
+		};
+		dashboardShare.cancelBy(dashboard, user);
 		expect(dashboardShare.id).not.toBeNull();
 		expect(dashboardShare.dashboard).toBe(dashboard);
 		expect(dashboardShare.status).toBe('Rejected');
-		expect(dashboardShare.sharedWithEmail).toBe(email);
+		expect(dashboardShare.sharedWithEmail).toBe(user.email);
 		expect(dashboardShare.sharedWithUserId).toBeNull();
-		expect(dashboardShare.createdAt).not.toBeNull();
-		expect(dashboardShare.approvedAt).toBeNull();
 	});
 
 	test('Cancel a dashboard share with status == Approved', () => {
 		let dashboard = 'userId-1111';
-		let email = 'validuser@mail.com';
+		let sharedWithEmail = 'user02@mail.com';
 		let dashboardShare = new DashboardShare(
 			dashboard,
-			email,
+			sharedWithEmail,
 			'userId-2222',
-			'Approved',
-			new Date(),
-			new Date()
+			'Approved'
 		);
-		dashboardShare.cancelBy(dashboard, 'validuser@mail.com');
+		let user = {
+			id: dashboardShare.sharedWithUserId as string,
+			name: 'User 02',
+			email: sharedWithEmail,
+		};
+		dashboardShare.cancelBy(dashboard, user);
 		expect(dashboardShare.id).not.toBeNull();
 		expect(dashboardShare.dashboard).toBe(dashboard);
 		expect(dashboardShare.status).toBe('Cancelled');
-		expect(dashboardShare.sharedWithEmail).toBe(email);
+		expect(dashboardShare.sharedWithEmail).toBe(user.email);
 		expect(dashboardShare.sharedWithUserId).not.toBeNull();
-		expect(dashboardShare.createdAt).not.toBeNull();
-		expect(dashboardShare.approvedAt).not.toBeNull();
 	});
 
 	test('Cannot cancel a dashboard share from other user', () => {
 		let dashboard = 'userId-1111';
-		let email = 'validuser@mail.com';
-		let dashboardShare = new DashboardShare(dashboard, email);
+		let sharedWithEmail = 'user02@mail.com';
+		let dashboardShare = new DashboardShare(dashboard, sharedWithEmail);
+		let otherUser = {
+			id: 'userId-3333',
+			name: 'User 03',
+			email: 'user03@mail.com',
+		};
+		expect(() => dashboardShare.cancelBy(dashboard, otherUser)).toThrowError(
+			'Invalid access'
+		);
+	});
 
-		expect(() =>
-			dashboardShare.cancelBy(dashboard, 'invaliduser@mail.com')
-		).toThrowError('Dashboard share not authorized for user');
+	test('Check if current user can share the dashboard', () => {
+		let user = {
+			id: 'userId-1111',
+			name: '',
+			email: '',
+		};
+		let dashboard = 'userId-1111';
+		DashboardShare.canBeShared(user, dashboard);
+	});
+
+	test('Check if current user cannot share the dashboard', () => {
+		let user = {
+			id: 'userId-2222',
+			name: '',
+			email: '',
+		};
+		let dashboard = 'userId-1111';
+		expect(() => DashboardShare.canBeShared(user, dashboard)).toThrow(
+			'Invalid access'
+		);
 	});
 });

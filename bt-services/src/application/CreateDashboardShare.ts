@@ -12,16 +12,14 @@ export default class CreateDashboardShare {
 	}
 
 	async execute(input: Input): Promise<string> {
-		if (input.dashboard !== input.user.id) {
-			throw new Error('Cannot share this dashboard');
-		}
-		let pendingOrApprovedDashboardShare =
+		DashboardShare.canBeShared(input.user, input.dashboard);
+		let pendingOrApprovedDashboardShareWithUser =
 			await this.getPendingOrApprovedDashboardShare(
 				input.dashboard,
 				input.shareWith
 			);
-		if (pendingOrApprovedDashboardShare.length !== 0) {
-			throw new Error('Dashboard already shared with user');
+		if (pendingOrApprovedDashboardShareWithUser.length !== 0) {
+			return pendingOrApprovedDashboardShareWithUser[0].id;
 		}
 		let dashboardShare = new DashboardShare(input.dashboard, input.shareWith);
 		await this.dashboardShareRepository.save(dashboardShare);
