@@ -46,6 +46,6 @@ export default class CategoryController {
 	bind(http: Http) {
 		http.on('get', '/dashboard/{dashboard}/categories', this.list);
 		http.on('post', '/dashboard/{dashboard}/categories', this.save);
-		http.on('delete', '/dashboard/{dashboard}/categories/{id}', this.list);
+		http.on('delete', '/dashboard/{dashboard}/categories/{id}', this.delete);
 	}
 }

@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import CategoryController from './infra/in/controller/dashboard/CategoryController';
+import EntryController from './infra/in/controller/dashboard/EntryController';
 import ShareController from './infra/in/controller/dashboard/ShareController';
 import MeController from './infra/in/controller/MeController';
 import PaymentTypeController from './infra/in/controller/PaymentTypeController';
@@ -12,9 +13,9 @@ let repositoryFactory = new MongoDBRepositoryFactory();
 let http = new ExpressAdapter();
 http.secure(new GoogleSecurity());
 new PaymentTypeController(repositoryFactory).bind(http);
-// new EntryController(repositoryFactory).bind(http);
 new MeController(repositoryFactory).bind(http);
 new ShareController(repositoryFactory).bind(http);
 new CategoryController(repositoryFactory).bind(http);
+new EntryController(repositoryFactory).bind(http);
 let serverPort = parseInt(process.env.SERVER_PORT as string) || 8080;
 http.listen(serverPort);

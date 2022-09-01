@@ -3,6 +3,7 @@ import CancelDashboardShare from '../../../../application/CancelDashboardShare';
 import CreateDashboardShare from '../../../../application/CreateDashboardShare';
 import DashboardShare from '../../../../domain/entity/DashboardShare';
 import UserData from '../../../../domain/entity/UserData';
+import InvalidAccess from '../../../../domain/exception/InvalidAccess';
 import RepositoryFactory from '../../../../domain/repository/RepositoryFactory';
 import Http from '../../http/Http';
 
@@ -17,7 +18,7 @@ export default class ShareController {
 	list = async (userData: UserData, req: any) => {
 		let dashboard = req['dashboard'];
 		if (dashboard !== userData.id) {
-			throw new Error('Cannot list the dashboard share');
+			throw new InvalidAccess();
 		}
 		let dashboardShared = await this.dashboardShareRepository.getByDashboard(
 			dashboard

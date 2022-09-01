@@ -2,6 +2,7 @@ import Http, { CallbackFunction } from './Http';
 import express, { Response } from 'express';
 import bodyParser from 'body-parser';
 import Security from '../security/Secutity';
+import InvalidAccess from '../../../domain/exception/InvalidAccess';
 
 export default class ExpressAdapter implements Http {
 	private app: any;
@@ -32,6 +33,10 @@ export default class ExpressAdapter implements Http {
 					res.json(responseData);
 				}
 			} catch (e: any) {
+				if (e instanceof InvalidAccess) {
+					res.status(401).json('Invalid access');
+					return;
+				}
 				res.status(500).json(e.message);
 			}
 		});
@@ -42,7 +47,7 @@ export default class ExpressAdapter implements Http {
 			let token = req.get('Authorization');
 			let userData = await security.extract(token);
 			if (!userData) {
-				res.status(401).send('Unauthorized');
+				res.status(401).send('Invalid token');
 				return;
 			}
 			req.userData = userData;
